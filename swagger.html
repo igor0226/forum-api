@@ -1,0 +1,1876 @@
+<!DOCTYPE HTML>
+<html>
+    
+    
+
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>forum</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+     body {
+         font-size: 14px;
+         position: relative;
+     }
+
+     * {
+         box-sizing: border-box;
+     }
+
+     #side-nav {
+         top: 0;
+         position: fixed;
+         right: 0;
+         height: 100vh;
+         overflow-y: auto;
+         overflow-x: hidden;
+         padding-top: 1rem;
+         padding-bottom: 1rem;
+     }
+
+     .col-md-9 {
+         padding-left: 2rem;
+     }
+
+     .nav ul {
+         list-style: none;
+         padding-left: 2rem;
+     }
+
+     .nav ul li a {
+         padding: 5px 10px;
+         color: inherit;
+     }
+
+     .nav li {
+         transition: border 0.25s;
+         word-break: break-word;
+     }
+
+     .nav-item {
+         margin-bottom: 2px;
+     }
+
+     .nav-link.active {
+         text-decoration: underline;
+     }
+
+     .group_link {
+         color: #333;
+         font-weight: bold;
+     }
+
+     a h3 {
+         margin: 0;
+     }
+
+     .card, .jumbotron, .form-control {
+         border-radius: 0;
+     }
+
+     .card-header>a {
+         color: inherit;
+     }
+
+     .schema>.schema, .enum {
+         padding-left: 1rem;
+     }
+
+     .schema>.sKey {
+         font-weight: bold;
+     }
+
+     .schema>.sOptional {
+         font-style: italic;
+     }
+
+     .schema>.sType {
+         color: #5555aa;
+     }
+
+     .sDescription>p {
+         padding: 0;
+         margin: 0;
+         padding-left: 1rem;
+     }
+
+     .footer {
+         text-align: right;
+     }
+
+     
+     li.get {
+         background-color: #E7F0F7;
+         border: thin solid #AAC0D3;
+         color: #445A6D;
+     }
+     .card-header.get {
+         background-color: #E7F0F7;
+         color: #445A6D;
+         border-bottom-color: #AAC0D3;
+     }
+     .card.get {
+         border-color: #AAC0D3;
+     }
+     
+     li.delete {
+         background-color: #F5E8E8;
+         border: thin solid #CFADAE;
+         color: #694748;
+     }
+     .card-header.delete {
+         background-color: #F5E8E8;
+         color: #694748;
+         border-bottom-color: #CFADAE;
+     }
+     .card.delete {
+         border-color: #CFADAE;
+     }
+     
+     li.post {
+         background-color: #E7F6EC;
+         border: thin solid #AACFB8;
+         color: #446952;
+     }
+     .card-header.post {
+         background-color: #E7F6EC;
+         color: #446952;
+         border-bottom-color: #AACFB8;
+     }
+     .card.post {
+         border-color: #AACFB8;
+     }
+     
+     li.put {
+         background-color: #F9F2E9;
+         border: thin solid #D7C7B1;
+         color: #71614B;
+     }
+     .card-header.put {
+         background-color: #F9F2E9;
+         color: #71614B;
+         border-bottom-color: #D7C7B1;
+     }
+     .card.put {
+         border-color: #D7C7B1;
+     }
+     
+     li.patch {
+         background-color: #FCE9E3;
+         border: thin solid #DCBCAA;
+         color: #765644;
+     }
+     .card-header.patch {
+         background-color: #FCE9E3;
+         color: #765644;
+         border-bottom-color: #DCBCAA;
+     }
+     .card.patch {
+         border-color: #DCBCAA;
+     }
+     
+
+    </style>
+</head>
+    <body data-spy="scroll" data-target="#side-nav">
+
+    <div class="container-fluid">
+        <br>
+        <div class="row">
+            <div class="col-md-3" id="side-nav">
+                <input id="search" type="text" class="form-control" placeholder="Search">
+                <ul class="nav nav-list">
+                    
+                    <span class="list-group">
+                        <a href="#tag_"
+                           class="group_link"></a>
+                        <ul class="nav">
+                            
+                            <li class="nav-item post">
+                                <a class="nav-link" href="#post__forum_create">
+                                    <strong>POST</strong>
+                                    /forum/create
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item post">
+                                <a class="nav-link" href="#post__forum__slug__create">
+                                    <strong>POST</strong>
+                                    /forum/{slug}/create
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item get">
+                                <a class="nav-link" href="#get__forum__slug__details">
+                                    <strong>GET</strong>
+                                    /forum/{slug}/details
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item get">
+                                <a class="nav-link" href="#get__forum__slug__threads">
+                                    <strong>GET</strong>
+                                    /forum/{slug}/threads
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item get">
+                                <a class="nav-link" href="#get__forum__slug__users">
+                                    <strong>GET</strong>
+                                    /forum/{slug}/users
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item get">
+                                <a class="nav-link" href="#get__post__id__details">
+                                    <strong>GET</strong>
+                                    /post/{id}/details
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item post">
+                                <a class="nav-link" href="#post__post__id__details">
+                                    <strong>POST</strong>
+                                    /post/{id}/details
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item post">
+                                <a class="nav-link" href="#post__service_clear">
+                                    <strong>POST</strong>
+                                    /service/clear
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item get">
+                                <a class="nav-link" href="#get__service_status">
+                                    <strong>GET</strong>
+                                    /service/status
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item post">
+                                <a class="nav-link" href="#post__thread__slug_or_id__create">
+                                    <strong>POST</strong>
+                                    /thread/{slug_or_id}/create
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item get">
+                                <a class="nav-link" href="#get__thread__slug_or_id__details">
+                                    <strong>GET</strong>
+                                    /thread/{slug_or_id}/details
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item post">
+                                <a class="nav-link" href="#post__thread__slug_or_id__details">
+                                    <strong>POST</strong>
+                                    /thread/{slug_or_id}/details
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item get">
+                                <a class="nav-link" href="#get__thread__slug_or_id__posts">
+                                    <strong>GET</strong>
+                                    /thread/{slug_or_id}/posts
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item post">
+                                <a class="nav-link" href="#post__thread__slug_or_id__vote">
+                                    <strong>POST</strong>
+                                    /thread/{slug_or_id}/vote
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item post">
+                                <a class="nav-link" href="#post__user__nickname__create">
+                                    <strong>POST</strong>
+                                    /user/{nickname}/create
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item get">
+                                <a class="nav-link" href="#get__user__nickname__profile">
+                                    <strong>GET</strong>
+                                    /user/{nickname}/profile
+                                </a>
+                            </li>
+
+                            
+                            <li class="nav-item post">
+                                <a class="nav-link" href="#post__user__nickname__profile">
+                                    <strong>POST</strong>
+                                    /user/{nickname}/profile
+                                </a>
+                            </li>
+
+                            
+                        </ul>
+                    </span>
+                    
+                </ul>
+            </div>
+            <div class="col-md-9">
+
+                <div id="info" class="jumbotron">
+                    <h1>forum 0.1.0</h1>
+
+                    
+                    <p>Тестовое задание для реализации проекта "Форумы" на курсе по базам данных в
+Технопарке Mail.ru (https://park.mail.ru).</p>
+                    
+                </div>
+
+                <hr>
+
+                <div class="group">
+                    <h1 id="tag_"></h1>
+                    <div class="card method post">
+                        <div class="card-header post"
+                             id="post__forum_create">
+                            <a name="post__forum_create">
+                                <h3>
+                                    <strong>POST</strong>
+                                    /forum/create
+                                    <span class="pull-right">
+                                        Создание форума
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="post__forum_create_d">
+                            
+                            <h3>Description</h3>
+                            <p>Создание нового форума.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>forum</td>
+                                        <td>body</td>
+                                        <td>Данные форума.</td>
+                                        <td>True</td>
+                                        <td><div class="schema"><span class="sKey">posts</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Общее кол-во сообщений в данном форуме.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL), уникальное поле.</p></span></div><div class="schema"><span class="sKey">threads</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Общее кол-во ветвей обсуждения в данном форуме.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Название форума.</p></span></div><div class="schema"><span class="sKey">user</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Nickname пользователя, который отвечает за форум.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>201</td>
+                                        <td>Форум успешно создан.
+Возвращает данные созданного форума.
+</td>
+                                        <td><div class="schema"><span class="sKey">posts</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Общее кол-во сообщений в данном форуме.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL), уникальное поле.</p></span></div><div class="schema"><span class="sKey">threads</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Общее кол-во ветвей обсуждения в данном форуме.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Название форума.</p></span></div><div class="schema"><span class="sKey">user</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Nickname пользователя, который отвечает за форум.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Владелец форума не найден.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>409</td>
+                                        <td>Форум уже присутсвует в базе данных.
+Возвращает данные ранее созданного форума.
+</td>
+                                        <td><div class="schema"><span class="sKey">posts</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Общее кол-во сообщений в данном форуме.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL), уникальное поле.</p></span></div><div class="schema"><span class="sKey">threads</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Общее кол-во ветвей обсуждения в данном форуме.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Название форума.</p></span></div><div class="schema"><span class="sKey">user</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Nickname пользователя, который отвечает за форум.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method post">
+                        <div class="card-header post"
+                             id="post__forum__slug__create">
+                            <a name="post__forum__slug__create">
+                                <h3>
+                                    <strong>POST</strong>
+                                    /forum/{slug}/create
+                                    <span class="pull-right">
+                                        Создание ветки
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="post__forum__slug__create_d">
+                            
+                            <h3>Description</h3>
+                            <p>Добавление новой ветки обсуждения на форум.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>slug</td>
+                                        <td>path</td>
+                                        <td>Идентификатор форума.</td>
+                                        <td>True</td>
+                                        <td>identity string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>thread</td>
+                                        <td>body</td>
+                                        <td>Данные ветки обсуждения.</td>
+                                        <td>True</td>
+                                        <td><div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Пользователь, создавший данную тему.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания ветки на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Форум, в котором расположена данная ветка обсуждения.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Описание ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL).
+В данной структуре slug опционален и не может быть числом.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Заголовок ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">votes</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Кол-во голосов непосредственно за данное сообщение форума.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>201</td>
+                                        <td>Ветка обсуждения успешно создана.
+Возвращает данные созданной ветки обсуждения.
+</td>
+                                        <td><div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Пользователь, создавший данную тему.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания ветки на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Форум, в котором расположена данная ветка обсуждения.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Описание ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL).
+В данной структуре slug опционален и не может быть числом.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Заголовок ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">votes</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Кол-во голосов непосредственно за данное сообщение форума.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Автор ветки или форум не найдены.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>409</td>
+                                        <td>Ветка обсуждения уже присутсвует в базе данных.
+Возвращает данные ранее созданной ветки обсуждения.
+</td>
+                                        <td><div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Пользователь, создавший данную тему.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания ветки на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Форум, в котором расположена данная ветка обсуждения.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Описание ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL).
+В данной структуре slug опционален и не может быть числом.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Заголовок ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">votes</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Кол-во голосов непосредственно за данное сообщение форума.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method get">
+                        <div class="card-header get"
+                             id="get__forum__slug__details">
+                            <a name="get__forum__slug__details">
+                                <h3>
+                                    <strong>GET</strong>
+                                    /forum/{slug}/details
+                                    <span class="pull-right">
+                                        Получение информации о форуме
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="get__forum__slug__details_d">
+                            
+                            <h3>Description</h3>
+                            <p>Получение информации о форуме по его идентификаторе.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>slug</td>
+                                        <td>path</td>
+                                        <td>Идентификатор форума.</td>
+                                        <td>True</td>
+                                        <td>identity string</td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Информация о форуме.
+</td>
+                                        <td><div class="schema"><span class="sKey">posts</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Общее кол-во сообщений в данном форуме.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL), уникальное поле.</p></span></div><div class="schema"><span class="sKey">threads</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Общее кол-во ветвей обсуждения в данном форуме.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Название форума.</p></span></div><div class="schema"><span class="sKey">user</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Nickname пользователя, который отвечает за форум.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Форум отсутсвует в системе.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method get">
+                        <div class="card-header get"
+                             id="get__forum__slug__threads">
+                            <a name="get__forum__slug__threads">
+                                <h3>
+                                    <strong>GET</strong>
+                                    /forum/{slug}/threads
+                                    <span class="pull-right">
+                                        Список ветвей обсужления форума
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="get__forum__slug__threads_d">
+                            
+                            <h3>Description</h3>
+                            <p>Получение списка ветвей обсужления данного форума.</p>
+<p>Ветви обсуждения выводятся отсортированные по дате создания.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>slug</td>
+                                        <td>path</td>
+                                        <td>Идентификатор форума.</td>
+                                        <td>True</td>
+                                        <td>identity string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>limit</td>
+                                        <td>query</td>
+                                        <td>Максимальное кол-во возвращаемых записей.</td>
+                                        <td></td>
+                                        <td>int32 number</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>since</td>
+                                        <td>query</td>
+                                        <td>Дата создания ветви обсуждения, с которой будут выводиться записи
+(ветвь обсуждения с указанной датой попадает в результат выборки).
+</td>
+                                        <td></td>
+                                        <td>date-time string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>desc</td>
+                                        <td>query</td>
+                                        <td>Флаг сортировки по убыванию.
+</td>
+                                        <td></td>
+                                        <td>boolean</td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Информация о ветках обсуждения на форуме.
+</td>
+                                        <td><div class="schema">[<div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Пользователь, создавший данную тему.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания ветки на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Форум, в котором расположена данная ветка обсуждения.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Описание ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL).
+В данной структуре slug опционален и не может быть числом.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Заголовок ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">votes</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Кол-во голосов непосредственно за данное сообщение форума.</p></span></div>]</div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Форум отсутсвует в системе.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method get">
+                        <div class="card-header get"
+                             id="get__forum__slug__users">
+                            <a name="get__forum__slug__users">
+                                <h3>
+                                    <strong>GET</strong>
+                                    /forum/{slug}/users
+                                    <span class="pull-right">
+                                        Пользователи данного форума
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="get__forum__slug__users_d">
+                            
+                            <h3>Description</h3>
+                            <p>Получение списка пользователей, у которых есть пост или ветка обсуждения в данном форуме.</p>
+<p>Пользователи выводятся отсортированные по nickname в порядке возрастания.
+Порядок сотрировки должен соответсвовать побайтовому сравнение в нижнем регистре.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>slug</td>
+                                        <td>path</td>
+                                        <td>Идентификатор форума.</td>
+                                        <td>True</td>
+                                        <td>identity string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>limit</td>
+                                        <td>query</td>
+                                        <td>Максимальное кол-во возвращаемых записей.</td>
+                                        <td></td>
+                                        <td>int32 number</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>since</td>
+                                        <td>query</td>
+                                        <td>Идентификатор пользователя, с которого будут выводиться пользоватли
+(пользователь с данным идентификатором в результат не попадает).
+</td>
+                                        <td></td>
+                                        <td>identity string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>desc</td>
+                                        <td>query</td>
+                                        <td>Флаг сортировки по убыванию.
+</td>
+                                        <td></td>
+                                        <td>boolean</td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Информация о пользователях форума.
+</td>
+                                        <td><div class="schema">[<div class="schema"><span class="sKey">about</span> (<span class="sType">text string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Описание пользователя.</p></span></div><div class="schema"><span class="sKey">email</span> (<span class="sType">email string</span>): <span class="sDescription"><p>Почтовый адрес пользователя (уникальное поле).</p></span></div><div class="schema"><span class="sKey">fullname</span> (<span class="sType">string</span>): <span class="sDescription"><p>Полное имя пользователя.</p></span></div><div class="schema"><span class="sKey">nickname</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Имя пользователя (уникальное поле).
+Данное поле допускает только латиницу, цифры и знак подчеркивания.
+Сравнение имени регистронезависимо.</p></span></div>]</div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Форум отсутсвует в системе.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method get">
+                        <div class="card-header get"
+                             id="get__post__id__details">
+                            <a name="get__post__id__details">
+                                <h3>
+                                    <strong>GET</strong>
+                                    /post/{id}/details
+                                    <span class="pull-right">
+                                        Получение информации о ветке обсуждения
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="get__post__id__details_d">
+                            
+                            <h3>Description</h3>
+                            <p>Получение информации о ветке обсуждения по его имени.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>id</td>
+                                        <td>path</td>
+                                        <td>Идентификатор сообщения.</td>
+                                        <td>True</td>
+                                        <td>int64 number</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>related</td>
+                                        <td>query</td>
+                                        <td>Включение полной информации о соответвующем объекте сообщения.
+
+Если тип объекта не указан, то полная информация об этих объектах не
+передаётся.
+</td>
+                                        <td></td>
+                                        <td>array</td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Информация о ветке обсуждения.
+</td>
+                                        <td><div class="schema"><span class="sKey">author</span> (<span class="sType">object</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Информация о пользователе.</p></span><div class="schema"><span class="sKey">about</span> (<span class="sType">text string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Описание пользователя.</p></span></div><div class="schema"><span class="sKey">email</span> (<span class="sType">email string</span>): <span class="sDescription"><p>Почтовый адрес пользователя (уникальное поле).</p></span></div><div class="schema"><span class="sKey">fullname</span> (<span class="sType">string</span>): <span class="sDescription"><p>Полное имя пользователя.</p></span></div><div class="schema"><span class="sKey">nickname</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Имя пользователя (уникальное поле).
+Данное поле допускает только латиницу, цифры и знак подчеркивания.
+Сравнение имени регистронезависимо.</p></span></div></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">object</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Информация о форуме.</p></span><div class="schema"><span class="sKey">posts</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Общее кол-во сообщений в данном форуме.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL), уникальное поле.</p></span></div><div class="schema"><span class="sKey">threads</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Общее кол-во ветвей обсуждения в данном форуме.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Название форума.</p></span></div><div class="schema"><span class="sKey">user</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Nickname пользователя, который отвечает за форум.</p></span></div></div><div class="schema"><span class="sKey">post</span> (<span class="sType">object</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Сообщение внутри ветки обсуждения на форуме.</p></span><div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Автор, написавший данное сообщение.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания сообщения на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор форума (slug) данного сообещния.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор данного сообщения.</p></span></div><div class="schema"><span class="sKey">isEdited</span> (<span class="sType">boolean</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Истина, если данное сообщение было изменено.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Собственно сообщение форума.</p></span></div><div class="schema"><span class="sKey">parent</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор родительского сообщения (0 - корневое сообщение обсуждения).</p></span></div><div class="schema"><span class="sKey">thread</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветви (id) обсуждения данного сообещния.</p></span></div></div><div class="schema"><span class="sKey">thread</span> (<span class="sType">object</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Ветка обсуждения на форуме.</p></span><div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Пользователь, создавший данную тему.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания ветки на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Форум, в котором расположена данная ветка обсуждения.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Описание ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL).
+В данной структуре slug опционален и не может быть числом.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Заголовок ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">votes</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Кол-во голосов непосредственно за данное сообщение форума.</p></span></div></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Ветка обсуждения отсутсвует в форуме.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method post">
+                        <div class="card-header post"
+                             id="post__post__id__details">
+                            <a name="post__post__id__details">
+                                <h3>
+                                    <strong>POST</strong>
+                                    /post/{id}/details
+                                    <span class="pull-right">
+                                        Изменение сообщения
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="post__post__id__details_d">
+                            
+                            <h3>Description</h3>
+                            <p>Изменение сообщения на форуме.</p>
+<p>Если сообщение поменяло текст, то оно должно получить отметку <code>isEdited</code>.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>id</td>
+                                        <td>path</td>
+                                        <td>Идентификатор сообщения.</td>
+                                        <td>True</td>
+                                        <td>int64 number</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>post</td>
+                                        <td>body</td>
+                                        <td>Изменения сообщения.</td>
+                                        <td>True</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Собственно сообщение форума.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Информация о сообщении.
+</td>
+                                        <td><div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Автор, написавший данное сообщение.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания сообщения на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор форума (slug) данного сообещния.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор данного сообщения.</p></span></div><div class="schema"><span class="sKey">isEdited</span> (<span class="sType">boolean</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Истина, если данное сообщение было изменено.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Собственно сообщение форума.</p></span></div><div class="schema"><span class="sKey">parent</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор родительского сообщения (0 - корневое сообщение обсуждения).</p></span></div><div class="schema"><span class="sKey">thread</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветви (id) обсуждения данного сообещния.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Сообщение отсутсвует в форуме.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method post">
+                        <div class="card-header post"
+                             id="post__service_clear">
+                            <a name="post__service_clear">
+                                <h3>
+                                    <strong>POST</strong>
+                                    /service/clear
+                                    <span class="pull-right">
+                                        Очистка всех данных в базе
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="post__service_clear_d">
+                            
+                            <h3>Description</h3>
+                            <p>Безвозвратное удаление всей пользовательской информации из базы данных.</p>
+                            
+
+                            
+
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Очистка базы успешно завершена</td>
+                                        <td></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method get">
+                        <div class="card-header get"
+                             id="get__service_status">
+                            <a name="get__service_status">
+                                <h3>
+                                    <strong>GET</strong>
+                                    /service/status
+                                    <span class="pull-right">
+                                        Получение инфомарции о базе данных
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="get__service_status_d">
+                            
+                            <h3>Description</h3>
+                            <p>Получение инфомарции о базе данных.</p>
+                            
+
+                            
+
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Кол-во записей в базе данных, включая помеченные как "удалённые".
+</td>
+                                        <td><div class="schema"><span class="sKey">forum</span> (<span class="sType">int32 number</span>): <span class="sDescription"><p>Кол-во разделов в базе данных.</p></span></div><div class="schema"><span class="sKey">post</span> (<span class="sType">int64 number</span>): <span class="sDescription"><p>Кол-во сообщений в базе данных.</p></span></div><div class="schema"><span class="sKey">thread</span> (<span class="sType">int32 number</span>): <span class="sDescription"><p>Кол-во веток обсуждения в базе данных.</p></span></div><div class="schema"><span class="sKey">user</span> (<span class="sType">int32 number</span>): <span class="sDescription"><p>Кол-во пользователей в базе данных.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method post">
+                        <div class="card-header post"
+                             id="post__thread__slug_or_id__create">
+                            <a name="post__thread__slug_or_id__create">
+                                <h3>
+                                    <strong>POST</strong>
+                                    /thread/{slug_or_id}/create
+                                    <span class="pull-right">
+                                        Создание новых постов
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="post__thread__slug_or_id__create_d">
+                            
+                            <h3>Description</h3>
+                            <p>Добавление новых постов в ветку обсуждения на форум.</p>
+<p>Все посты, созданные в рамках одного вызова данного метода должны иметь одинаковую дату создания (Post.Created).</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>slug_or_id</td>
+                                        <td>path</td>
+                                        <td>Идентификатор ветки обсуждения.</td>
+                                        <td>True</td>
+                                        <td>identity string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>posts</td>
+                                        <td>body</td>
+                                        <td>Список создаваемых постов.</td>
+                                        <td>True</td>
+                                        <td><div class="schema">[<div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Автор, написавший данное сообщение.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания сообщения на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор форума (slug) данного сообещния.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор данного сообщения.</p></span></div><div class="schema"><span class="sKey">isEdited</span> (<span class="sType">boolean</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Истина, если данное сообщение было изменено.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Собственно сообщение форума.</p></span></div><div class="schema"><span class="sKey">parent</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор родительского сообщения (0 - корневое сообщение обсуждения).</p></span></div><div class="schema"><span class="sKey">thread</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветви (id) обсуждения данного сообещния.</p></span></div>]</div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>201</td>
+                                        <td>Посты успешно созданы.
+Возвращает данные созданных постов в том же порядке, в котором их передали на вход метода.
+</td>
+                                        <td><div class="schema">[<div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Автор, написавший данное сообщение.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания сообщения на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор форума (slug) данного сообещния.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор данного сообщения.</p></span></div><div class="schema"><span class="sKey">isEdited</span> (<span class="sType">boolean</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Истина, если данное сообщение было изменено.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Собственно сообщение форума.</p></span></div><div class="schema"><span class="sKey">parent</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор родительского сообщения (0 - корневое сообщение обсуждения).</p></span></div><div class="schema"><span class="sKey">thread</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветви (id) обсуждения данного сообещния.</p></span></div>]</div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Ветка обсуждения отсутствует в базе данных.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>409</td>
+                                        <td>Хотя бы один родительский пост отсутсвует в текущей ветке обсуждения.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method get">
+                        <div class="card-header get"
+                             id="get__thread__slug_or_id__details">
+                            <a name="get__thread__slug_or_id__details">
+                                <h3>
+                                    <strong>GET</strong>
+                                    /thread/{slug_or_id}/details
+                                    <span class="pull-right">
+                                        Получение информации о ветке обсуждения
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="get__thread__slug_or_id__details_d">
+                            
+                            <h3>Description</h3>
+                            <p>Получение информации о ветке обсуждения по его имени.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>slug_or_id</td>
+                                        <td>path</td>
+                                        <td>Идентификатор ветки обсуждения.</td>
+                                        <td>True</td>
+                                        <td>string</td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Информация о ветке обсуждения.
+</td>
+                                        <td><div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Пользователь, создавший данную тему.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания ветки на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Форум, в котором расположена данная ветка обсуждения.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Описание ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL).
+В данной структуре slug опционален и не может быть числом.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Заголовок ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">votes</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Кол-во голосов непосредственно за данное сообщение форума.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Ветка обсуждения отсутсвует в форуме.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method post">
+                        <div class="card-header post"
+                             id="post__thread__slug_or_id__details">
+                            <a name="post__thread__slug_or_id__details">
+                                <h3>
+                                    <strong>POST</strong>
+                                    /thread/{slug_or_id}/details
+                                    <span class="pull-right">
+                                        Обновление ветки
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="post__thread__slug_or_id__details_d">
+                            
+                            <h3>Description</h3>
+                            <p>Обновление ветки обсуждения на форуме.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>slug_or_id</td>
+                                        <td>path</td>
+                                        <td>Идентификатор ветки обсуждения.</td>
+                                        <td>True</td>
+                                        <td>identity string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>thread</td>
+                                        <td>body</td>
+                                        <td>Данные ветки обсуждения.</td>
+                                        <td>True</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Описание ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Заголовок ветки обсуждения.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Информация о ветке обсуждения.
+</td>
+                                        <td><div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Пользователь, создавший данную тему.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания ветки на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Форум, в котором расположена данная ветка обсуждения.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Описание ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL).
+В данной структуре slug опционален и не может быть числом.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Заголовок ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">votes</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Кол-во голосов непосредственно за данное сообщение форума.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Ветка обсуждения отсутсвует в форуме.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method get">
+                        <div class="card-header get"
+                             id="get__thread__slug_or_id__posts">
+                            <a name="get__thread__slug_or_id__posts">
+                                <h3>
+                                    <strong>GET</strong>
+                                    /thread/{slug_or_id}/posts
+                                    <span class="pull-right">
+                                        Сообщения данной ветви обсуждения
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="get__thread__slug_or_id__posts_d">
+                            
+                            <h3>Description</h3>
+                            <p>Получение списка сообщений в данной ветке форуме.</p>
+<p>Сообщения выводятся отсортированные по дате создания.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>slug_or_id</td>
+                                        <td>path</td>
+                                        <td>Идентификатор ветки обсуждения.</td>
+                                        <td>True</td>
+                                        <td>identity string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>limit</td>
+                                        <td>query</td>
+                                        <td>Максимальное кол-во возвращаемых записей.</td>
+                                        <td></td>
+                                        <td>int32 number</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>since</td>
+                                        <td>query</td>
+                                        <td>Идентификатор поста, после которого будут выводиться записи
+(пост с данным идентификатором в результат не попадает).
+</td>
+                                        <td></td>
+                                        <td>int64 number</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>sort</td>
+                                        <td>query</td>
+                                        <td>Вид сортировки:
+
+ * flat - по дате, комментарии выводятся простым списком в порядке создания;
+ * tree - древовидный, комментарии выводятся отсортированные в дереве
+   по N штук;
+ * parent_tree - древовидные с пагинацией по родительским (parent_tree),
+   на странице N родительских комментов и все комментарии прикрепленные
+   к ним, в древвидном отображение.
+
+Подробности: https://park.mail.ru/blog/topic/view/1191/
+</td>
+                                        <td></td>
+                                        <td>string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>desc</td>
+                                        <td>query</td>
+                                        <td>Флаг сортировки по убыванию.
+</td>
+                                        <td></td>
+                                        <td>boolean</td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Информация о сообщениях форума.
+</td>
+                                        <td><div class="schema">[<div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Автор, написавший данное сообщение.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания сообщения на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор форума (slug) данного сообещния.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор данного сообщения.</p></span></div><div class="schema"><span class="sKey">isEdited</span> (<span class="sType">boolean</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Истина, если данное сообщение было изменено.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Собственно сообщение форума.</p></span></div><div class="schema"><span class="sKey">parent</span> (<span class="sType">int64 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор родительского сообщения (0 - корневое сообщение обсуждения).</p></span></div><div class="schema"><span class="sKey">thread</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветви (id) обсуждения данного сообещния.</p></span></div>]</div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Ветка обсуждения отсутсвует в форуме.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method post">
+                        <div class="card-header post"
+                             id="post__thread__slug_or_id__vote">
+                            <a name="post__thread__slug_or_id__vote">
+                                <h3>
+                                    <strong>POST</strong>
+                                    /thread/{slug_or_id}/vote
+                                    <span class="pull-right">
+                                        Проголосовать за ветвь обсуждения
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="post__thread__slug_or_id__vote_d">
+                            
+                            <h3>Description</h3>
+                            <p>Изменение голоса за ветвь обсуждения.
+Один пользователь учитывается только один раз и может изменить своё
+мнение.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>slug_or_id</td>
+                                        <td>path</td>
+                                        <td>Идентификатор ветки обсуждения.</td>
+                                        <td>True</td>
+                                        <td>identity string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>vote</td>
+                                        <td>body</td>
+                                        <td>Информация о голосовании пользователя.</td>
+                                        <td>True</td>
+                                        <td></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Информация о ветке обсуждения.
+</td>
+                                        <td><div class="schema"><span class="sKey">author</span> (<span class="sType">identity string</span>): <span class="sDescription"><p>Пользователь, создавший данную тему.</p></span></div><div class="schema"><span class="sKey">created</span> (<span class="sType">date-time string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Дата создания ветки на форуме.</p></span></div><div class="schema"><span class="sKey">forum</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Форум, в котором расположена данная ветка обсуждения.</p></span></div><div class="schema"><span class="sKey">id</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Идентификатор ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">message</span> (<span class="sType">text string</span>): <span class="sDescription"><p>Описание ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">slug</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Человекопонятный URL (https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_URL).
+В данной структуре slug опционален и не может быть числом.</p></span></div><div class="schema"><span class="sKey">title</span> (<span class="sType">string</span>): <span class="sDescription"><p>Заголовок ветки обсуждения.</p></span></div><div class="schema"><span class="sKey">votes</span> (<span class="sType">int32 number</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Кол-во голосов непосредственно за данное сообщение форума.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Ветка обсуждения отсутсвует в форуме.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method post">
+                        <div class="card-header post"
+                             id="post__user__nickname__create">
+                            <a name="post__user__nickname__create">
+                                <h3>
+                                    <strong>POST</strong>
+                                    /user/{nickname}/create
+                                    <span class="pull-right">
+                                        Создание нового пользователя
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="post__user__nickname__create_d">
+                            
+                            <h3>Description</h3>
+                            <p>Создание нового пользователя в базе данных.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>nickname</td>
+                                        <td>path</td>
+                                        <td>Идентификатор пользователя.</td>
+                                        <td>True</td>
+                                        <td>string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>profile</td>
+                                        <td>body</td>
+                                        <td>Данные пользовательского профиля.</td>
+                                        <td>True</td>
+                                        <td><div class="schema"><span class="sKey">about</span> (<span class="sType">text string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Описание пользователя.</p></span></div><div class="schema"><span class="sKey">email</span> (<span class="sType">email string</span>): <span class="sDescription"><p>Почтовый адрес пользователя (уникальное поле).</p></span></div><div class="schema"><span class="sKey">fullname</span> (<span class="sType">string</span>): <span class="sDescription"><p>Полное имя пользователя.</p></span></div><div class="schema"><span class="sKey">nickname</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Имя пользователя (уникальное поле).
+Данное поле допускает только латиницу, цифры и знак подчеркивания.
+Сравнение имени регистронезависимо.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>201</td>
+                                        <td>Пользователь успешно создан.
+Возвращает данные созданного пользователя.
+</td>
+                                        <td><div class="schema"><span class="sKey">about</span> (<span class="sType">text string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Описание пользователя.</p></span></div><div class="schema"><span class="sKey">email</span> (<span class="sType">email string</span>): <span class="sDescription"><p>Почтовый адрес пользователя (уникальное поле).</p></span></div><div class="schema"><span class="sKey">fullname</span> (<span class="sType">string</span>): <span class="sDescription"><p>Полное имя пользователя.</p></span></div><div class="schema"><span class="sKey">nickname</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Имя пользователя (уникальное поле).
+Данное поле допускает только латиницу, цифры и знак подчеркивания.
+Сравнение имени регистронезависимо.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>409</td>
+                                        <td>Пользователь уже присутсвует в базе данных.
+Возвращает данные ранее созданных пользователей с тем же nickname-ом иои email-ом.
+</td>
+                                        <td><div class="schema">[<div class="schema"><span class="sKey">about</span> (<span class="sType">text string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Описание пользователя.</p></span></div><div class="schema"><span class="sKey">email</span> (<span class="sType">email string</span>): <span class="sDescription"><p>Почтовый адрес пользователя (уникальное поле).</p></span></div><div class="schema"><span class="sKey">fullname</span> (<span class="sType">string</span>): <span class="sDescription"><p>Полное имя пользователя.</p></span></div><div class="schema"><span class="sKey">nickname</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Имя пользователя (уникальное поле).
+Данное поле допускает только латиницу, цифры и знак подчеркивания.
+Сравнение имени регистронезависимо.</p></span></div>]</div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method get">
+                        <div class="card-header get"
+                             id="get__user__nickname__profile">
+                            <a name="get__user__nickname__profile">
+                                <h3>
+                                    <strong>GET</strong>
+                                    /user/{nickname}/profile
+                                    <span class="pull-right">
+                                        Получение информации о пользователе
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="get__user__nickname__profile_d">
+                            
+                            <h3>Description</h3>
+                            <p>Получение информации о пользователе форума по его имени.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>nickname</td>
+                                        <td>path</td>
+                                        <td>Идентификатор пользователя.</td>
+                                        <td>True</td>
+                                        <td>string</td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Информация о пользователе.
+</td>
+                                        <td><div class="schema"><span class="sKey">about</span> (<span class="sType">text string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Описание пользователя.</p></span></div><div class="schema"><span class="sKey">email</span> (<span class="sType">email string</span>): <span class="sDescription"><p>Почтовый адрес пользователя (уникальное поле).</p></span></div><div class="schema"><span class="sKey">fullname</span> (<span class="sType">string</span>): <span class="sDescription"><p>Полное имя пользователя.</p></span></div><div class="schema"><span class="sKey">nickname</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Имя пользователя (уникальное поле).
+Данное поле допускает только латиницу, цифры и знак подчеркивания.
+Сравнение имени регистронезависимо.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Пользователь отсутсвует в системе.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card method post">
+                        <div class="card-header post"
+                             id="post__user__nickname__profile">
+                            <a name="post__user__nickname__profile">
+                                <h3>
+                                    <strong>POST</strong>
+                                    /user/{nickname}/profile
+                                    <span class="pull-right">
+                                        Изменение данных о пользователе
+                                    </span>
+                                </h3>
+                            </a>
+                        </div>
+                        <div class="card-block"
+                             id="post__user__nickname__profile_d">
+                            
+                            <h3>Description</h3>
+                            <p>Изменение информации в профиле пользователя.</p>
+                            
+
+                            
+
+                            
+                            <h3>Parameters</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Located in</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>nickname</td>
+                                        <td>path</td>
+                                        <td>Идентификатор пользователя.</td>
+                                        <td>True</td>
+                                        <td>string</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>profile</td>
+                                        <td>body</td>
+                                        <td>Изменения профиля пользователя.</td>
+                                        <td>True</td>
+                                        <td><div class="schema"><span class="sKey">about</span> (<span class="sType">text string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Описание пользователя.</p></span></div><div class="schema"><span class="sKey">email</span> (<span class="sType">email string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Почтовый адрес пользователя (уникальное поле).</p></span></div><div class="schema"><span class="sKey">fullname</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Полное имя пользователя.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            
+
+                            <h3>Responses</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Schema</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>200</td>
+                                        <td>Актуальная информация о пользователе после изменения профиля.
+</td>
+                                        <td><div class="schema"><span class="sKey">about</span> (<span class="sType">text string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Описание пользователя.</p></span></div><div class="schema"><span class="sKey">email</span> (<span class="sType">email string</span>): <span class="sDescription"><p>Почтовый адрес пользователя (уникальное поле).</p></span></div><div class="schema"><span class="sKey">fullname</span> (<span class="sType">string</span>): <span class="sDescription"><p>Полное имя пользователя.</p></span></div><div class="schema"><span class="sKey">nickname</span> (<span class="sType">identity string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Имя пользователя (уникальное поле).
+Данное поле допускает только латиницу, цифры и знак подчеркивания.
+Сравнение имени регистронезависимо.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>404</td>
+                                        <td>Пользователь отсутсвует в системе.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>409</td>
+                                        <td>Новые данные профиля пользователя конфликтуют с имеющимися пользователями.
+</td>
+                                        <td><div class="schema"><span class="sKey">message</span> (<span class="sType">string</span>, <span class="sOptional">optional</span>): <span class="sDescription"><p>Текстовое описание ошибки.
+В процессе проверки API никаких проверок на содерижимое данного описание не делается.</p></span></div></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+
+                <footer class="footer">
+                    Generated by
+                    <a href="https://github.com/JuhaniImberg/swagger-render">
+                        Swagger-Render
+                    </a> 1.6.0<br>
+                    2021-10-05 22:33:21.338680
+                </footer>
+            </div>
+        </div>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha/js/bootstrap.min.js"></script>
+    <script src="https://cdn.rawgit.com/joshaven/string_score/3b51216ccaa15a795df27502df5e8fbca554c0ab/string_score.min.js"></script>
+    <script>
+     $("#search").on("input", function(e) {
+         var text = e.target.value;
+         $(".nav-item").map(function(i, el) {
+             var cmp = $(el).children()[0].innerText;
+             if(cmp.score(text) > 0 || text.length == 0) {
+                 $(el).show();
+             } else {
+                 $(el).hide();
+             }
+         });
+     });
+    </script>
+</body>
+</html>
