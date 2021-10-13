@@ -2,7 +2,7 @@ from .base import BaseModel
 
 
 class UserModel(BaseModel):
-    async def insert(self, about, email, fullname, nickname):
+    def insert(self, about, email, fullname, nickname):
         query = '''
             INSERT INTO users
             (about, email, fullname, nickname)
@@ -10,23 +10,52 @@ class UserModel(BaseModel):
             RETURNING about, email, fullname, nickname;
         '''.format(about, email, fullname, nickname)
 
-        return await self.db_socket.execute_query(query)
+        return self.db_socket.execute_query(query)
 
     # get user by nickname or email
-    async def get_users(self, nickname='', email=''):
+    def get_users(self, nickname='', email=''):
         query = '''
             SELECT about, email, fullname, nickname
             FROM users
-            WHERE '''
+            WHERE {};
+        '''
+
+        condition = ''
 
         if nickname and email:
-            query += 'nickname = \'{}\' OR email = \'{}\';'.format(nickname, email)
+            condition = 'nickname = \'{}\' OR email = \'{}\''.format(nickname, email)
         elif nickname:
-            query += 'nickname = \'{}\';'.format(nickname)
+            condition = 'nickname = \'{}\''.format(nickname)
         elif email:
-            query += 'email = \'{}\';'.format(email)
+            condition = 'email = \'{}\''.format(email)
 
-        return await self.db_socket.execute_query(query)
+        return self.db_socket.execute_query(query.format(condition))
+
+    def update_user(self, nickname, email='', fullname='', about=''):
+        query_template = '''
+            UPDATE users SET {}
+            WHERE nickname='{}'
+            RETURNING about, email, fullname, nickname;
+        '''
+
+        update = ''
+
+        if email:
+            update += 'email = \'{}\''.format(email)
+    
+        if fullname:
+            if update:
+                update += ', '
+            update += 'fullname = \'{}\''.format(fullname)
+
+        if about:
+            if update:
+                update += ', '
+            update += 'about = \'{}\''.format(about)
+
+        query = query_template.format(update, nickname)
+        
+        return self.db_socket.execute_query(query)
 
 
 user_model = UserModel()

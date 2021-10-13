@@ -5,7 +5,7 @@ CREATE TABLE users
 (
   id BIGSERIAL PRIMARY KEY,
   about TEXT,
-  email TEXT NOT NULL UNIQUE,
+  email CITEXT NOT NULL UNIQUE,
   fullname TEXT NOT NULL,
   nickname CITEXT UNIQUE
 );

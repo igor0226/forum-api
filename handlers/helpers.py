@@ -11,6 +11,24 @@ def response_with_error():
     )
 
 
+def validate_route_param(name, validator):
+    def wrapper(handler):
+        async def inner(request: web.Request):
+            param = request.match_info.get(name)
+
+            if not param or not validator(param):
+                return web.json_response(
+                    data={'message': 'bad route parameter'},
+                    status=web.HTTPUnprocessableEntity.status_code,
+                )
+
+            return await handler(request)
+
+        return inner
+
+    return wrapper
+
+
 def field(name: str, required: bool, field_type=str, validator=default_validator):
     return {
         'name': name,
@@ -37,13 +55,13 @@ def validate_json(*fields: Dict):
                 field_type = field_dict.get('field_type')
                 validator = field_dict.get('validator')
 
-                value_from_body = body.get(name)
-                has_value = value_from_body is not None
+                value_to_validate = body.get(name)
+                has_value = value_to_validate is not None
 
                 is_invalid = (
                         required and not has_value or
-                        has_value and type(value_from_body) != field_type or
-                        has_value and not validator(value_from_body)
+                        has_value and type(value_to_validate) != field_type or
+                        has_value and not validator(value_to_validate)
                 )
 
                 if is_invalid:
