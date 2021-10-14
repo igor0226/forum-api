@@ -85,6 +85,10 @@ async def create_user(request: web.Request):
     )
 
 
+@validate_route_param(
+    name='nickname',
+    validator=is_nickname,
+)
 async def get_user(request: web.Request):
     nickname = request.match_info['nickname']
 
