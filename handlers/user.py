@@ -1,9 +1,16 @@
 from aiohttp import web
 from models.user import user_model
-from .helpers import field, validate_json, validate_route_param, response_with_error
+from .helpers import (
+    field,
+    validate_json,
+    validate_route_param,
+    response_with_error,
+    add_logging,
+)
 from .validators import not_null_str, is_email, is_nickname
 
 
+@add_logging()
 @validate_route_param(
     name='nickname',
     validator=is_nickname,
@@ -53,7 +60,7 @@ async def create_user(request: web.Request):
                 'fullname': user.get('fullname'),
                 'nickname': user.get('nickname'),
             })
-    
+
         return web.json_response(
             data=conflict_users,
             status=web.HTTPConflict.status_code,
@@ -85,6 +92,7 @@ async def create_user(request: web.Request):
     )
 
 
+@add_logging()
 @validate_route_param(
     name='nickname',
     validator=is_nickname,
@@ -119,6 +127,7 @@ async def get_user(request: web.Request):
     )
 
 
+@add_logging()
 @validate_route_param(
     name='nickname',
     validator=is_nickname,
@@ -149,40 +158,40 @@ async def modify_user(request: web.Request):
     email = body.get('email')
     fullname = body.get('fullname') or ''
     about = body.get('about') or ''
-    
+
     found_users, error = await user_model.get_users(
         nickname=nickname,
         email=email,
     )
-    
+
     if error:
         return response_with_error()
-    
+
     if not found_users or not len(found_users):
         return web.json_response(
             data={'message': 'user does not exist'},
             status=web.HTTPNotFound.status_code,
         )
-    
+
     for user in found_users:
-        if user.get('email') == email:
+        if user.get('email').lower() == email.lower():
             return web.json_response(
                 data={'message': 'user with a such email exists'},
                 status=web.HTTPConflict.status_code,
             )
-    
+
     updated_users, error = await user_model.update_user(
         nickname=nickname,
         email=email,
         fullname=fullname,
         about=about,
     )
-    
+
     if error:
         return response_with_error()
-    
+
     response_body = {}
-    
+
     for user in updated_users:
         response_body = {
             'about': user.get('about'),
@@ -190,7 +199,7 @@ async def modify_user(request: web.Request):
             'fullname': user.get('fullname'),
             'nickname': user.get('nickname'),
         }
-    
+
     return web.json_response(
         data=response_body,
         status=web.HTTPOk.status_code,

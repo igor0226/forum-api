@@ -16,10 +16,10 @@ CREATE TABLE users
 CREATE TABLE forums
 (
   id BIGSERIAL PRIMARY KEY,
-  posts BIGINT,
+  posts BIGINT DEFAULT 0,
   slug TEXT UNIQUE,
-  threads BIGINT,
+  threads BIGINT DEFAULT 0,
   title TEXT,
-  author TEXT,
+  author CITEXT,
   FOREIGN KEY (author) REFERENCES users(nickname)
 );

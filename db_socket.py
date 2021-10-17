@@ -1,5 +1,6 @@
 import asyncpg
 
+
 # TODO: logging
 class DbSocket:
     def __init__(self):
@@ -20,19 +21,19 @@ class DbSocket:
         try:
             await self.connect()
         except asyncpg.PostgresError:
-            # log 'CONNECT ERROR' type(e), e, query
+            # TODO log 'CONNECT ERROR' type(e), e, query
             return None, True
 
         try:
             result = await self.__db_socket.fetch(query)
         except asyncpg.PostgresError:
-            # log 'EXEC QUERY ERROR' type(e), e, query
+            # TODO log 'EXEC QUERY ERROR' type(e), e, query
             return None, True
 
         try:
             await self.close()
         except asyncpg.PostgresError:
-            # log 'CLOSE ERROR' type(e), e, query
+            # TODO log 'CLOSE ERROR' type(e), e, query
             return None, True
 
         return result, None

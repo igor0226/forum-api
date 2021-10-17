@@ -2,6 +2,20 @@ from typing import Dict
 from json import decoder
 from aiohttp import web
 from .validators import default_validator
+from logger import app_logger
+
+
+def add_logging():
+    def wrapper(handler):
+        async def inner(request: web.Request):
+            body = await request.text()
+            app_logger.info('GOT {} {}, body: {}'.format(request.method, request.rel_url, body))
+
+            return await handler(request)
+
+        return inner
+
+    return wrapper
 
 
 def response_with_error():
@@ -44,6 +58,8 @@ def validate_json(*fields: Dict):
             try:
                 body = await request.json()
             except decoder.JSONDecodeError:
+                text = await request.text()
+                app_logger.info('JSON decoding error for {} got {}'.format(request.rel_url, text))
                 return web.json_response(
                     data={'message': 'wrong request body format'},
                     status=web.HTTPBadRequest.status_code,
@@ -65,6 +81,9 @@ def validate_json(*fields: Dict):
                 )
 
                 if is_invalid:
+                    text = await request.text()
+                    app_logger.info('JSON validating failure for {} got {}'.format(request.rel_url, text))
+
                     return web.json_response(
                         data={'message': 'wrong request body format in field "{}"'.format(name)},
                         status=web.HTTPUnprocessableEntity.status_code,

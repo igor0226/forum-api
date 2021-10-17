@@ -3,5 +3,6 @@
 *.pyc
 */__pycache__
 /.idea
+/log
 tech-db-forum
 report.html
