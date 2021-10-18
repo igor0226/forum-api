@@ -25,3 +25,7 @@ def is_non_negative(val):
 def is_url(val):
     parse_result = urlparse(val)
     return parse_result.scheme == 'https' and parse_result.path and parse_result.netloc
+
+
+def is_non_digit(val):
+    return not re.match('^\d+$', val)

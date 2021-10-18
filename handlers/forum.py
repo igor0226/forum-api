@@ -1,8 +1,19 @@
 from aiohttp import web
 from models.forum import forum_model
 from models.user import user_model
-from .helpers import field, validate_json, response_with_error, add_logging
-from .validators import is_non_negative, is_nickname
+from .helpers import (
+    field,
+    validate_route_param,
+    validate_json,
+    response_with_error,
+    add_logging,
+)
+from .validators import (
+    is_non_negative,
+    is_nickname,
+    not_null_str,
+    is_non_digit,
+)
 
 
 @add_logging()
@@ -17,6 +28,7 @@ from .validators import is_non_negative, is_nickname
         name='slug',
         required=True,
         field_type=str,
+        validator=is_non_digit,
     ),
     field(
         name='threads',
@@ -72,10 +84,11 @@ async def create_forum(request: web.Request):
             status=web.HTTPNotFound.status_code,
         )
 
+    original_case_nickname = found_users[0].get('nickname')
     created_forums, error = await forum_model.create_forum(
         slug=slug,
         title=title,
-        author=author,
+        author=original_case_nickname,
         posts=posts,
         threads=threads,
     )
@@ -97,4 +110,41 @@ async def create_forum(request: web.Request):
     return web.json_response(
         data=response_body,
         status=web.HTTPCreated.status_code
+    )
+
+
+@add_logging()
+@validate_route_param(
+    name='slug',
+    validator=not_null_str,
+    validator=is_non_digit,
+)
+async def get_forum(request: web.Request):
+    slug = request.match_info['slug']
+
+    found_forums, error = await forum_model.get_forum(slug=slug)
+
+    if error:
+        return response_with_error()
+
+    if not found_forums or not len(found_forums):
+        return web.json_response(
+            data={'message': 'forum not found'},
+            status=web.HTTPNotFound.status_code,
+        )
+
+    response_body = {}
+
+    for forum in found_forums:
+        response_body = {
+            'posts': forum.get('posts'),
+            'slug': forum.get('slug'),
+            'threads': forum.get('threads'),
+            'title': forum.get('title'),
+            'user': forum.get('author'),
+        }
+
+    return web.json_response(
+        data=response_body,
+        status=web.HTTPOk.status_code,
     )

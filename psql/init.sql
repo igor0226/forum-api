@@ -17,7 +17,7 @@ CREATE TABLE forums
 (
   id BIGSERIAL PRIMARY KEY,
   posts BIGINT DEFAULT 0,
-  slug TEXT UNIQUE,
+  slug CITEXT UNIQUE,
   threads BIGINT DEFAULT 0,
   title TEXT,
   author CITEXT,
