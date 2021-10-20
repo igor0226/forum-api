@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from urllib.parse import urlparse
 
 
@@ -29,3 +30,12 @@ def is_url(val):
 
 def is_non_digit(val):
     return not re.match('^\d+$', val)
+
+
+# "2021-03-01T03:22:19.081+03:00"
+def is_timestamp(val: str):
+    try:
+        timestamp = ''.join(val.rsplit(':', 1))
+        return bool(datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f%z'))
+    except ValueError:
+        return False

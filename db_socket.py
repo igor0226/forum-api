@@ -1,7 +1,6 @@
 import asyncpg
 
 
-# TODO: logging
 class DbSocket:
     def __init__(self):
         self.__db_socket = None
@@ -12,7 +11,8 @@ class DbSocket:
             password='password',
             database='app',
             host='127.0.0.1',
-            port='5432')
+            port='5432',
+        )
 
     async def close(self):
         await self.__db_socket.close()

@@ -116,7 +116,6 @@ async def create_forum(request: web.Request):
 @add_logging()
 @validate_route_param(
     name='slug',
-    validator=not_null_str,
     validator=is_non_digit,
 )
 async def get_forum(request: web.Request):
