@@ -5,6 +5,8 @@ from handlers.thread import create_thread
 from logger import app_logger
 
 
+# TODO: make typical getters for objects from db
+# TODO: run flake8 and fix all errors
 # TODO: make yaml config
 # TODO: check SQL injections
 # TODO: may be provide body from validate_json

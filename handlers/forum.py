@@ -11,7 +11,6 @@ from .helpers import (
 from .validators import (
     is_non_negative,
     is_nickname,
-    not_null_str,
     is_non_digit,
 )
 

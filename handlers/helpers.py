@@ -9,7 +9,11 @@ def add_logging():
     def wrapper(handler):
         async def inner(request: web.Request):
             body = await request.text()
-            app_logger.info('GOT {} {}, body: {}'.format(request.method, request.rel_url, body))
+            app_logger.info('GOT {} {}, body: {}'.format(
+                request.method,
+                request.rel_url,
+                body
+            ))
 
             return await handler(request)
 
@@ -43,7 +47,8 @@ def validate_route_param(name, validator):
     return wrapper
 
 
-def field(name: str, required: bool, field_type=str, validator=default_validator):
+def field(name: str, required: bool,
+          field_type=str, validator=default_validator):
     return {
         'name': name,
         'required': required,
@@ -59,7 +64,10 @@ def validate_json(*fields: Dict):
                 body = await request.json()
             except decoder.JSONDecodeError:
                 text = await request.text()
-                app_logger.info('JSON decoding error for {} got {}'.format(request.rel_url, text))
+                app_logger.info('JSON decoding error for {} got {}'.format(
+                    request.rel_url,
+                    text,
+                ))
                 return web.json_response(
                     data={'message': 'wrong request body format'},
                     status=web.HTTPBadRequest.status_code,
@@ -75,14 +83,17 @@ def validate_json(*fields: Dict):
                 has_value = value_to_validate is not None
 
                 is_invalid = (
-                        required and not has_value or
-                        has_value and type(value_to_validate) != field_type or
-                        has_value and not validator(value_to_validate)
+                    required and not has_value or
+                    has_value and type(value_to_validate) != field_type or
+                    has_value and not validator(value_to_validate)
                 )
 
                 if is_invalid:
                     text = await request.text()
-                    app_logger.info('JSON validating failure for {} got {}'.format(request.rel_url, text))
+                    app_logger.info('JSON validating failure for {} got {}'.format(
+                        request.rel_url,
+                        text,
+                    ))
 
                     return web.json_response(
                         data={'message': 'wrong request body format in field "{}"'.format(name)},

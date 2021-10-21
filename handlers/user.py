@@ -70,7 +70,7 @@ async def create_user(request: web.Request):
             status=web.HTTPConflict.status_code,
         )
 
-    users_list, error = await user_model.insert(
+    users_list, error = await user_model.create_user(
         about=about,
         nickname=nickname,
         email=email,
@@ -179,24 +179,23 @@ async def modify_user(request: web.Request):
 
     user_matched_by_nickname = {}
 
-    if nickname:
-        for user in found_users:
-            if (
-                    email and user.get('email').lower() == email.lower()
-                    and user.get('nickname').lower() != nickname
-            ):
-                return web.json_response(
-                    data={'message': 'user with a such email exists'},
-                    status=web.HTTPConflict.status_code,
-                )
-            
-            if user.get('nickname').lower() == nickname:
-                user_matched_by_nickname = {
-                    'about': user.get('about'),
-                    'email': user.get('email'),
-                    'nickname': user.get('nickname'),
-                    'fullname': user.get('fullname'),
-                }
+    for user in found_users:
+        if (
+                email and user.get('email').lower() == email.lower()
+                and user.get('nickname').lower() != nickname
+        ):
+            return web.json_response(
+                data={'message': 'user with a such email exists'},
+                status=web.HTTPConflict.status_code,
+            )
+        
+        if user.get('nickname').lower() == nickname:
+            user_matched_by_nickname = {
+                'about': user.get('about'),
+                'email': user.get('email'),
+                'nickname': user.get('nickname'),
+                'fullname': user.get('fullname'),
+            }
 
     # empty update
     if not (about or email or fullname):

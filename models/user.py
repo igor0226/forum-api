@@ -2,7 +2,7 @@ from .base import BaseModel
 
 
 class UserModel(BaseModel):
-    def insert(self, about, email, fullname, nickname):
+    def create_user(self, about, email, fullname, nickname):
         query = '''
             INSERT INTO users
             (about, email, fullname, nickname)
@@ -42,7 +42,7 @@ class UserModel(BaseModel):
 
         if email:
             update += 'email = \'{}\''.format(email)
-    
+
         if fullname:
             if update:
                 update += ', '
@@ -54,7 +54,7 @@ class UserModel(BaseModel):
             update += 'about = \'{}\''.format(about)
 
         query = query_template.format(update, nickname)
-        
+
         return self.db_socket.execute_query(query)
 
 
