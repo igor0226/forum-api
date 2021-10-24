@@ -1,7 +1,7 @@
 from aiohttp import web
 from handlers.user import create_user, get_user, modify_user
 from handlers.forum import create_forum, get_forum
-from handlers.thread import create_thread
+from handlers.thread import create_thread, get_threads
 from logger import app_logger
 
 
@@ -20,6 +20,7 @@ app.router.add_route('POST', '/api/forum/create', create_forum)
 app.router.add_route('GET', '/api/forum/{slug}/details', get_forum)
 
 app.router.add_route('POST', '/api/forum/{slug}/create', create_thread)
+app.router.add_route('GET', '/api/forum/{slug}/threads', get_threads)
 
 app_logger.info('app started')
 web.run_app(app, port=5000)

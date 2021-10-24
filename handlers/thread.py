@@ -117,16 +117,7 @@ async def create_thread(request: web.Request):
             return response_with_error()
     
         for thread in found_threads:
-            conflict_thread = {
-                'id': thread.get('id'),
-                'author': thread.get('author'),
-                # 'created': thread.get('created'),
-                'forum': thread.get('forum'),
-                'message': thread.get('message'),
-                'slug': thread.get('slug'),
-                'title': thread.get('title'),
-                'votes': thread.get('votes'),
-            }
+            conflict_thread = thread_model.serialize(thread)
     
             return web.json_response(
                 data=conflict_thread,
@@ -147,18 +138,51 @@ async def create_thread(request: web.Request):
     if error:
         return response_with_error()
 
-    created_thread = {
-        'id': created_threads[0].get('id'),
-        'author': created_threads[0].get('author'),
-        # 'created': created_threads[0].get('created'),
-        'forum': created_threads[0].get('forum'),
-        'message': created_threads[0].get('message'),
-        'slug': created_threads[0].get('slug'),
-        'title': created_threads[0].get('title'),
-        'votes': created_threads[0].get('votes'),
-    }
+    created_thread = thread_model.serialize(created_threads[0])
 
     return web.json_response(
         data=created_thread,
         status=web.HTTPCreated.status_code,
+    )
+
+
+# TODO: validate query params via decorator
+@add_logging()
+@validate_route_param(
+    name='slug',
+    validator=is_non_digit,
+)
+async def get_threads(request: web.Request):
+    slug = request.match_info['slug']
+    limit = request.query.get('limit')
+
+    found_forums, error = await forum_model.get_forum(slug=slug)
+
+    if error:
+        return response_with_error()
+
+    if not found_forums or not len(found_forums):
+        return web.json_response(
+            data={'message': 'forum not found'},
+            status=web.HTTPNotFound.status_code,
+        )
+
+    found_threads, error = await thread_model.get_threads_by_forum(
+        slug=slug,
+        limit=limit,
+    )
+
+    if error:
+        return response_with_error()
+
+    threads_response = []
+
+    for thread in found_forums:
+        threads_response.append(
+            thread_model.serialize(thread)
+        )
+
+    return web.json_response(
+        data=threads_response,
+        status=web.HTTPOk.status_code,
     )

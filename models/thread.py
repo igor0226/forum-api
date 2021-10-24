@@ -52,5 +52,41 @@ class ThreadModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
+    def get_threads_by_forum(self, slug, limit=None):
+        query = '''
+                SELECT id, author, created, forum, message, slug, title, votes
+                FROM threads
+                WHERE slug = '{}'
+        '''.format(slug)
+
+        if limit is not None:
+            query += 'LIMIT {}'.format(limit)
+
+        query += ';'
+
+        return self.db_socket.execute_query(query)
+
+    @staticmethod
+    def serialize(db_object):
+        created = ''
+
+        # 2021-03-07 01:04:50.105000-00-00 ->
+        # 2021-03-07T01:04:50.105Z
+        if db_object.get('created'):
+            created = str(db_object.get('created'))
+            created = created[:10:] + 'T' + created[11::]
+            created = created[:-9:] + 'Z'
+
+        return {
+            'id': db_object.get('id'),
+            'author': db_object.get('author'),
+            'created': created,
+            'forum': db_object.get('forum'),
+            'message': db_object.get('message'),
+            'slug': db_object.get('slug'),
+            'title': db_object.get('title'),
+            'votes': db_object.get('votes'),
+        }
+
 
 thread_model = ThreadModel()
