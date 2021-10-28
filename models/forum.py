@@ -20,5 +20,15 @@ class ForumModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
+    @staticmethod
+    def serialize(db_object):
+        return {
+            'posts': db_object.get('posts'),
+            'slug': db_object.get('slug'),
+            'threads': db_object.get('threads'),
+            'title': db_object.get('title'),
+            'user': db_object.get('author'),
+        }
+
 
 forum_model = ForumModel()

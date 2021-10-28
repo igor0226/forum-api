@@ -1,6 +1,11 @@
 import re
-from datetime import datetime
 from urllib.parse import urlparse
+
+
+# "2020-10-31T20:12:41.233Z"
+date_re = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$'
+# "2021-03-01T03:22:19.081+03:00"
+date_with_tz_re = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}\+\d{2}:\d{2}$'
 
 
 def default_validator(val):
@@ -20,7 +25,7 @@ def is_nickname(val):
 
 
 def is_non_negative(val):
-    return val > 0
+    return int(val) > 0
 
 
 def is_url(val):
@@ -32,10 +37,9 @@ def is_non_digit(val):
     return not re.match('^\d+$', val)
 
 
-# "2021-03-01T03:22:19.081+03:00"
 def is_timestamp(val: str):
-    try:
-        timestamp = ''.join(val.rsplit(':', 1))
-        return bool(datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f%z'))
-    except ValueError:
-        return False
+    return bool(re.match(date_with_tz_re, val) or re.match(date_re, val))
+
+
+def is_bool_str(val):
+    return val == 'true' or val == 'false'

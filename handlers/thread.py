@@ -1,6 +1,7 @@
 from aiohttp import web
 from .helpers import (
     validate_route_param,
+    validate_query_params,
     validate_json,
     add_logging,
     field,
@@ -12,6 +13,7 @@ from .validators import (
     not_null_str,
     is_non_negative,
     is_timestamp,
+    is_bool_str,
 )
 from models.user import user_model
 from models.forum import forum_model
@@ -140,21 +142,40 @@ async def create_thread(request: web.Request):
 
     created_thread = thread_model.serialize(created_threads[0])
 
+    print('CREATE', forum_slug)
     return web.json_response(
         data=created_thread,
         status=web.HTTPCreated.status_code,
     )
 
 
-# TODO: validate query params via decorator
 @add_logging()
 @validate_route_param(
     name='slug',
     validator=is_non_digit,
 )
+@validate_query_params(
+    field(
+        name='limit',
+        required=False,
+        validator=is_non_negative,
+    ),
+    field(
+        name='since',
+        required=False,
+        validator=is_timestamp,
+    ),
+    field(
+        name='desc',
+        required=False,
+        validator=is_bool_str,
+    ),
+)
 async def get_threads(request: web.Request):
     slug = request.match_info['slug']
     limit = request.query.get('limit')
+    since = request.query.get('since')
+    desc = request.query.get('desc')
 
     found_forums, error = await forum_model.get_forum(slug=slug)
 
@@ -170,6 +191,8 @@ async def get_threads(request: web.Request):
     found_threads, error = await thread_model.get_threads_by_forum(
         slug=slug,
         limit=limit,
+        since=since,
+        desc=desc,
     )
 
     if error:
@@ -177,7 +200,7 @@ async def get_threads(request: web.Request):
 
     threads_response = []
 
-    for thread in found_forums:
+    for thread in found_threads:
         threads_response.append(
             thread_model.serialize(thread)
         )

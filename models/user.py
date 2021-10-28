@@ -57,5 +57,14 @@ class UserModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
+    @staticmethod
+    def serialize(db_object):
+        return {
+            'about': db_object.get('about'),
+            'email': db_object.get('email'),
+            'fullname': db_object.get('fullname'),
+            'nickname': db_object.get('nickname'),
+        }
+
 
 user_model = UserModel()

@@ -58,12 +58,7 @@ async def create_user(request: web.Request):
         conflict_users = []
 
         for user in existing_users:
-            conflict_users.append({
-                'about': user.get('about'),
-                'email': user.get('email'),
-                'fullname': user.get('fullname'),
-                'nickname': user.get('nickname'),
-            })
+            conflict_users.append(user_model.serialize(user))
 
         return web.json_response(
             data=conflict_users,
@@ -83,12 +78,7 @@ async def create_user(request: web.Request):
     response_body = {}
 
     for user in users_list:
-        response_body = {
-            'about': user.get('about'),
-            'email': user.get('email'),
-            'fullname': user.get('fullname'),
-            'nickname': user.get('nickname'),
-        }
+        response_body = user_model.serialize(user)
 
     return web.json_response(
         data=response_body,
@@ -115,15 +105,7 @@ async def get_user(request: web.Request):
             status=web.HTTPNotFound.status_code,
         )
 
-    response_body = {}
-
-    for user in found_users:
-        response_body = {
-            'about': user.get('about'),
-            'email': user.get('email'),
-            'fullname': user.get('fullname'),
-            'nickname': user.get('nickname'),
-        }
+    response_body = user_model.serialize(found_users[0])
 
     return web.json_response(
         data=response_body,
@@ -190,12 +172,7 @@ async def modify_user(request: web.Request):
             )
         
         if user.get('nickname').lower() == nickname:
-            user_matched_by_nickname = {
-                'about': user.get('about'),
-                'email': user.get('email'),
-                'nickname': user.get('nickname'),
-                'fullname': user.get('fullname'),
-            }
+            user_matched_by_nickname = user_model.serialize(user)
 
     # empty update
     if not (about or email or fullname):
@@ -217,12 +194,7 @@ async def modify_user(request: web.Request):
     response_body = {}
     
     for user in updated_users:
-        response_body = {
-            'about': user.get('about'),
-            'email': user.get('email'),
-            'fullname': user.get('fullname'),
-            'nickname': user.get('nickname'),
-        }
+        response_body = user_model.serialize(user)
     
     return web.json_response(
         data=response_body,

@@ -62,13 +62,7 @@ async def create_forum(request: web.Request):
 
     if found_forums and len(found_forums):
         for forum in found_forums:
-            response_body = {
-                'posts': forum.get('posts'),
-                'slug': forum.get('slug'),
-                'threads': forum.get('threads'),
-                'title': forum.get('title'),
-                'user': forum.get('author'),
-            }
+            response_body = forum_model.serialize(forum)
 
             return web.json_response(
                 data=response_body,
@@ -95,16 +89,7 @@ async def create_forum(request: web.Request):
     if error:
         return response_with_error()
 
-    response_body = {}
-
-    for forum in created_forums:
-        response_body = {
-            'posts': forum.get('posts'),
-            'slug': forum.get('slug'),
-            'threads': forum.get('threads'),
-            'title': forum.get('title'),
-            'user': forum.get('author'),
-        }
+    response_body = forum_model.serialize(created_forums[0])
 
     return web.json_response(
         data=response_body,
@@ -131,16 +116,7 @@ async def get_forum(request: web.Request):
             status=web.HTTPNotFound.status_code,
         )
 
-    response_body = {}
-
-    for forum in found_forums:
-        response_body = {
-            'posts': forum.get('posts'),
-            'slug': forum.get('slug'),
-            'threads': forum.get('threads'),
-            'title': forum.get('title'),
-            'user': forum.get('author'),
-        }
+    response_body = forum_model.serialize(found_forums[0])
 
     return web.json_response(
         data=response_body,
