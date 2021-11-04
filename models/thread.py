@@ -6,10 +6,18 @@ class ThreadModel(BaseModel):
         query = '''
             SELECT id, author, created, forum, slug, title, votes
             FROM threads
-            WHERE slug = \'{}\''''.format(slug)
+            WHERE
+        '''
 
-        if thread_id is not None:
-            query += ' OR id ={}'.format(thread_id)
+        slug_appended = False
+        if slug is not None and isinstance(slug, str):
+            query += 'slug = \'{}\''.format(slug)
+            slug_appended = True
+
+        if thread_id is not None and isinstance(thread_id, int):
+            if slug_appended:
+                query += ' OR'
+            query += ' id = {}'.format(thread_id)
 
         query += ';'
 
@@ -49,7 +57,6 @@ class ThreadModel(BaseModel):
         values_part += ')'
 
         query = insert_part + values_part + returning_part
-        print(query)
 
         return self.db_socket.execute_query(query)
 
@@ -81,15 +88,13 @@ class ThreadModel(BaseModel):
     def serialize(db_object):
         created = ''
 
-        # 2021-10-26 00:33:28,559 date based logging - INFO:GOT POST /api/forum/IZFIkV066uHc8/create, body: {"author":"o.okJP1U4Zh8BcRd","created":"2021-07-02T23:55:59.000+03:00","forum":"IZFIkV066uHc8","message":"Seu periculum terrae conprehendant pugno aliquantulum venatio agerem interiore ideo ceterarumque mors. Domi esca. Diiudico tua ad vicinior sonare omnesque id. Ea praetoria sic conmendat sum en at eas nolle e docens, discernens sensu tam re cogenda tua, spem.","slug":"z3rs22p-6WbCr","title":"Eo adparet."}
-        # 2021-07-02T20:55:00.000Z
-        # 2021-07-02T20:55:59.000Z
-
-        # 2021-03-07 01:04:50.105000-00-00 ->
-        # 2021-03-07T01:04:50.105Z
-        # print(db_object.get('created'))
         if db_object.get('created'):
             created = str(db_object.get('created'))
+            separator = created[19]
+
+            if separator == '+':
+                created = created[:19:] + '.000000' + created[19::]
+
             created = created[:10:] + 'T' + created[11::]
             created = created[:-9:] + 'Z'
 

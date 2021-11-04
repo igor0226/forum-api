@@ -142,7 +142,6 @@ async def create_thread(request: web.Request):
 
     created_thread = thread_model.serialize(created_threads[0])
 
-    print('CREATE', forum_slug)
     return web.json_response(
         data=created_thread,
         status=web.HTTPCreated.status_code,

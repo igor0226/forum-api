@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, List
+from functools import reduce
 from json import decoder
 from aiohttp import web
 from .validators import default_validator
@@ -101,41 +102,66 @@ def field(name: str, required: bool,
     }
 
 
+async def safe_parse_json(request):
+    body = None
+    error = False
+
+    try:
+        body = await request.json()
+    except decoder.JSONDecodeError:
+        text = await request.text()
+        app_logger.info('JSON decoding error for {} got {}'.format(
+            request.rel_url,
+            text,
+        ))
+        error = True
+    finally:
+        return body, error
+
+
 def validate_json(*fields: Dict):
     def wrapper(handler):
         async def inner(request: web.Request):
-            try:
-                body = await request.json()
-            except decoder.JSONDecodeError:
-                text = await request.text()
-                app_logger.info('JSON decoding error for {} got {}'.format(
-                    request.rel_url,
-                    text,
-                ))
+            body, error = await safe_parse_json(request)
+            if error:
                 return web.json_response(
                     data={'message': 'wrong request body format'},
                     status=web.HTTPBadRequest.status_code,
                 )
 
-            for field_dict in fields:
-                name = field_dict.get('name')
-                value_to_validate = body.get(name)
-                is_valid = _validate_field(field_dict, value_to_validate)
+            array_body = isinstance(body, list)
 
-                if not is_valid:
-                    text = await request.text()
-                    app_logger.info('JSON validating failure for {} got {}'.format(
-                        request.rel_url,
-                        text,
-                    ))
-
-                    return web.json_response(
-                        data={'message': 'wrong request body format in field "{}"'.format(name)},
-                        status=web.HTTPUnprocessableEntity.status_code,
-                    )
+            for val in (body if array_body else [body]):
+                for field_dict in fields:
+                    name = field_dict.get('name')
+                    value_to_validate = val.get(name)
+                    is_valid = _validate_field(field_dict, value_to_validate)
+    
+                    if not is_valid:
+                        text = await request.text()
+                        app_logger.info('JSON validating failure for {} got {}'.format(
+                            request.rel_url,
+                            text,
+                        ))
+    
+                        return web.json_response(
+                            data={'message': 'wrong request body format in field "{}"'.format(name)},
+                            status=web.HTTPUnprocessableEntity.status_code,
+                        )
 
             return await handler(request)
 
         return inner
 
     return wrapper
+
+
+def dict_from_list(values_list, key):
+    def unique_appender(values_dict, value):
+        got_by_key = value.get(key)
+        if got_by_key and got_by_key not in values_dict:
+            values_dict[got_by_key] = True
+
+        return values_dict
+
+    return reduce(unique_appender, values_list, dict())

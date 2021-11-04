@@ -1,11 +1,23 @@
 import re
 from urllib.parse import urlparse
+from functools import reduce
+from typing import Callable
 
 
 # "2020-10-31T20:12:41.233Z"
 date_re = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$'
 # "2021-03-01T03:22:19.081+03:00"
 date_with_tz_re = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}\+\d{2}:\d{2}$'
+
+
+def some(*validators: Callable[[any], bool]):
+    def wrapper(value):
+        return reduce(
+            lambda cur, validator: cur or validator(value),
+            validators,
+        )
+
+    return wrapper
 
 
 def default_validator(val):
@@ -37,8 +49,13 @@ def is_non_digit(val):
     return not re.match('^\d+$', val)
 
 
+def is_digit(val):
+    return bool(re.match('^\d+$', val))
+
+
 def is_timestamp(val: str):
-    return bool(re.match(date_with_tz_re, val) or re.match(date_re, val))
+    return bool(re.match(date_with_tz_re, val) or
+                re.match(date_re, val))
 
 
 def is_bool_str(val):

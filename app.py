@@ -2,10 +2,10 @@ from aiohttp import web
 from handlers.user import create_user, get_user, modify_user
 from handlers.forum import create_forum, get_forum
 from handlers.thread import create_thread, get_threads
+from handlers.posts import create_posts
 from logger import app_logger
 
 
-# TODO: make typical getters for objects from db
 # TODO: run flake8 and fix all errors
 # TODO: make yaml config
 # TODO: check SQL injections
@@ -21,6 +21,8 @@ app.router.add_route('GET', '/api/forum/{slug}/details', get_forum)
 
 app.router.add_route('POST', '/api/forum/{slug}/create', create_thread)
 app.router.add_route('GET', '/api/forum/{slug}/threads', get_threads)
+
+app.router.add_route('POST', '/api/thread/{slug_or_id}/create', create_posts)
 
 app_logger.info('app started')
 web.run_app(app, port=5000)
