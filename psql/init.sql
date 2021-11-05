@@ -53,8 +53,7 @@ CREATE TABLE posts
   author CITEXT NOT NULL,
   FOREIGN KEY (forum) REFERENCES forums(slug),
   FOREIGN KEY (thread) REFERENCES threads(id),
-  FOREIGN KEY (author) REFERENCES users(nickname),
-  UNIQUE(parent, forum, thread)
+  FOREIGN KEY (author) REFERENCES users(nickname)
 );
 
 CREATE FUNCTION

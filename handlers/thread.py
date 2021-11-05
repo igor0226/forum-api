@@ -105,7 +105,8 @@ async def create_thread(request: web.Request):
         or not found_forums or not len(found_forums)
     ):
         return web.json_response(
-            data={'message': 'user or forum not found'}
+            data={'message': 'user or forum not found'},
+            status=web.HTTPNotFound.status_code,
         )
 
     # TODO: make function for checking existing threads
@@ -128,7 +129,7 @@ async def create_thread(request: web.Request):
 
     created_threads, error = await thread_model.insert_thread(
         author=author,
-        forum=forum_slug,
+        forum=found_forums[0].get('slug'),
         message=message,
         title=title,
         votes=votes,

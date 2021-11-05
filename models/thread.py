@@ -1,10 +1,11 @@
 from .base import BaseModel
+from .helpers import serialize_pg_timestamp
 
 
 class ThreadModel(BaseModel):
     def get_thread(self, slug, thread_id=None):
         query = '''
-            SELECT id, author, created, forum, slug, title, votes
+            SELECT id, message, author, created, forum, slug, title, votes
             FROM threads
             WHERE
         '''
@@ -86,22 +87,12 @@ class ThreadModel(BaseModel):
 
     @staticmethod
     def serialize(db_object):
-        created = ''
-
-        if db_object.get('created'):
-            created = str(db_object.get('created'))
-            separator = created[19]
-
-            if separator == '+':
-                created = created[:19:] + '.000000' + created[19::]
-
-            created = created[:10:] + 'T' + created[11::]
-            created = created[:-9:] + 'Z'
-
         return {
             'id': db_object.get('id'),
             'author': db_object.get('author'),
-            'created': created,
+            'created': serialize_pg_timestamp(
+                db_object.get('created'),
+            ),
             'forum': db_object.get('forum'),
             'message': db_object.get('message'),
             'slug': db_object.get('slug'),

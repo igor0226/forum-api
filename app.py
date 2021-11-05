@@ -6,6 +6,7 @@ from handlers.posts import create_posts
 from logger import app_logger
 
 
+# TODO: more smart templates for SQL
 # TODO: run flake8 and fix all errors
 # TODO: make yaml config
 # TODO: check SQL injections

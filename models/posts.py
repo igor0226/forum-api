@@ -1,4 +1,5 @@
 from .base import BaseModel
+from .helpers import get_pg_timestamp, serialize_pg_timestamp
 
 
 class PostModel(BaseModel):
@@ -25,7 +26,8 @@ class PostModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
-    def create_posts(self, posts):
+    def create_posts(self, posts, thread_id, forum_slug):
+        default_timestamp = get_pg_timestamp()
         query = '''
             INSERT INTO posts
             (
@@ -35,18 +37,22 @@ class PostModel(BaseModel):
             VALUES
         '''
 
-        for post in posts:
+        for i, post in enumerate(posts):
+            post_forum = post.get('forum')
+            post_forum = f'\'{post_forum}\'' if post_forum else f'\'{forum_slug}\''
+
             query += '''
-                ({}, {}, '{}', {}, '{}', {}, '{}'),
-            '''.format(
-                post.get('created'),
-                'TRUE' if post.get('isEdited') == 'True' else 'FALSE',
+                ('{}', {}, '{}', {}, {}, {}, '{}')'''.format(
+                post.get('created') or default_timestamp,
+                'TRUE' if post.get('isEdited') == 'true' else 'FALSE',
                 post.get('message'),
-                post.get('parent'),
-                post.get('forum'),
-                post.get('thread'),
+                post.get('parent') or 'NULL',
+                post_forum,
+                post.get('thread') or thread_id,
                 post.get('author'),
             )
+            if i < len(posts) - 1:
+                query += ','
 
         query += '''
             RETURNING id, created, isEdited, message,
@@ -59,7 +65,9 @@ class PostModel(BaseModel):
     def serialize(db_object):
         return {
             'id': db_object.get('id'),
-            'created': db_object.get('created'),
+            'created': serialize_pg_timestamp(
+                db_object.get('created'),
+            ),
             'isEdited': db_object.get('isEdited'),
             'message': db_object.get('message'),
             'parent': db_object.get('parent'),

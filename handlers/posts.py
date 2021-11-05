@@ -1,6 +1,7 @@
 from aiohttp import web
 from .helpers import (
     field,
+    add_logging,
     validate_json,
     validate_route_param,
     response_with_error,
@@ -9,6 +10,7 @@ from .helpers import (
 from .validators import (
     some,
     not_null_str,
+    is_digit,
     is_nickname,
     is_timestamp,
     is_non_digit,
@@ -19,6 +21,7 @@ from models.posts import post_model
 from models.thread import thread_model
 
 
+@add_logging()
 @validate_route_param(
     name='slug_or_id',
     validator=some(
@@ -101,17 +104,18 @@ async def create_posts(request: web.Request):
 
     not_found_post_ids = set(not_found_post_ids)
     post_ids = set(post_ids)
-    for post_id in not_found_post_ids:
-        if not post_id not in post_ids:
+    for not_found_post_id in not_found_post_ids:
+        if not not_found_post_id not in post_ids:
             return web.json_response(
                 data={'message': 'parent post not found'},
                 status=web.HTTPConflict.status_code,
             )
 
     thread_slug_or_id = request.match_info['slug_or_id']
+    thread_id = int(thread_slug_or_id) if is_digit(thread_slug_or_id) else None
     found_threads, error = await thread_model.get_thread(
         slug=thread_slug_or_id,
-        thread_id=thread_slug_or_id,
+        thread_id=thread_id,
     )
 
     if error:
@@ -123,8 +127,12 @@ async def create_posts(request: web.Request):
             status=web.HTTPNotFound.status_code,
         )
 
+    thread_id = found_threads[0].get('id')
+    post_forum = found_threads[0].get('forum')
     created_posts, error = await post_model.create_posts(
         posts=posts,
+        thread_id=thread_id,
+        forum_slug=post_forum,
     )
     if error:
         return response_with_error()
