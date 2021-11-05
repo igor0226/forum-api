@@ -1,14 +1,25 @@
 from .base import BaseModel
+from jinja2 import Template
 
 
 class UserModel(BaseModel):
     def create_user(self, about, email, fullname, nickname):
-        query = '''
+        query = Template('''
             INSERT INTO users
             (about, email, fullname, nickname)
-            VALUES ('{}', '{}', '{}', '{}')
+            VALUES (
+                '{{ about }}',
+                '{{ email }}',
+                '{{ fullname }}',
+                '{{ nickname }}'
+            )
             RETURNING about, email, fullname, nickname;
-        '''.format(about, email, fullname, nickname)
+        ''').render(
+            about=about,
+            email=email,
+            fullname=fullname,
+            nickname=nickname,
+        )
 
         return self.db_socket.execute_query(query)
 
