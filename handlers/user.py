@@ -1,13 +1,13 @@
 from aiohttp import web
 from models.user import user_model
-from .helpers import (
+from handlers.helpers import (
     field,
     validate_json,
     validate_route_param,
     response_with_error,
     add_logging,
 )
-from .validators import (
+from handlers.validators import (
     not_null_str,
     is_email,
     is_nickname,

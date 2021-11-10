@@ -1,14 +1,14 @@
 from aiohttp import web
 from models.forum import forum_model
 from models.user import user_model
-from .helpers import (
+from handlers.helpers import (
     field,
     validate_route_param,
     validate_json,
     response_with_error,
     add_logging,
 )
-from .validators import (
+from handlers.validators import (
     is_non_negative,
     is_nickname,
     is_non_digit,

@@ -2,7 +2,7 @@ from typing import Dict, List
 from functools import reduce
 from json import decoder
 from aiohttp import web
-from .validators import default_validator
+from handlers.validators import default_validator
 from logger import app_logger
 
 

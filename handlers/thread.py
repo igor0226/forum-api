@@ -1,5 +1,5 @@
 from aiohttp import web
-from .helpers import (
+from handlers.helpers import (
     validate_route_param,
     validate_query_params,
     validate_json,
@@ -7,7 +7,7 @@ from .helpers import (
     field,
     response_with_error,
 )
-from .validators import (
+from handlers.validators import (
     is_non_digit,
     is_nickname,
     not_null_str,

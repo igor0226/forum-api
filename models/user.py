@@ -1,4 +1,4 @@
-from .base import BaseModel
+from models.base import BaseModel
 from jinja2 import Template
 
 

@@ -1,5 +1,5 @@
-from .base import BaseModel
-from .helpers import serialize_pg_timestamp
+from models.base import BaseModel
+from models.helpers import serialize_pg_timestamp
 
 
 class ThreadModel(BaseModel):

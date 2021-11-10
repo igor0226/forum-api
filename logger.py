@@ -8,6 +8,24 @@ class AppLogger:
     __logger: logging.Logger = None
     __dates_map = dict()
 
+    def __init__(self):
+        # ensure log directory exists
+        log_dir = os.path.join(
+            pathlib.Path(__file__).parent.resolve(),
+            'log',
+        )
+        log_inner_dir = os.path.join(
+            pathlib.Path(__file__).parent.resolve(),
+            'log',
+            '1d',
+        )
+
+        if not os.path.exists(log_dir):
+            os.mkdir(log_dir)
+
+        if not os.path.exists(log_inner_dir):
+            os.mkdir(log_inner_dir)
+
     def info(self, message):
         logger = self._get_logger()
         logger.info(message)
@@ -21,9 +39,11 @@ class AppLogger:
     
         if not self.__dates_map.get(curr_date):
             self.__dates_map[curr_date] = True
-            log_file_name = './log/1d/{}.log'.format(curr_date)
+            log_file_name = '{}.log'.format(curr_date)
             log_file_path = os.path.join(
                 pathlib.Path(__file__).parent.resolve(),
+                'log',
+                '1d',
                 log_file_name,
             )
     
