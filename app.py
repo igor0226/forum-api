@@ -6,12 +6,16 @@ from handlers.posts import create_posts
 from logger import app_logger
 
 
+# TODO: git hooks
 # TODO: more smart templates for SQL
 # TODO: run flake8 and fix all errors
 # TODO: make yaml config
 # TODO: check SQL injections
 # TODO: may be provide body from validate_json
 # TODO: catch and log all project exceptions
+# TODO: docker-compose
+# TODO: answers monitoring
+# TODO: telegram notifications
 app = web.Application()
 app.router.add_route('POST', '/api/user/{nickname}/create', create_user)
 app.router.add_route('GET', '/api/user/{nickname}/profile', get_user)

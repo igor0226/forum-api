@@ -1,5 +1,6 @@
-from .base import BaseModel
 from jinja2 import Template
+from .base import BaseModel
+from .helpers import make_kv_list
 
 
 class UserModel(BaseModel):
@@ -25,46 +26,47 @@ class UserModel(BaseModel):
 
     # get user by nickname or email
     def get_users(self, nickname='', email=''):
-        query = '''
+        conditions = make_kv_list(
+            nickname=nickname,
+            email=email,
+        )
+
+        query = Template('''
             SELECT about, email, fullname, nickname
             FROM users
-            WHERE {};
-        '''
+            WHERE
+            {% for i, cond in conditions %}
+              {{ cond.key }} = '{{ cond.value }}'
+              {% if conditions_len > 1 and i < conditions_len - 1 %}
+                OR
+              {% endif %}
+            {% endfor %}
+        ''').render(
+            conditions=enumerate(conditions),
+            conditions_len=len(conditions),
+        )
 
-        condition = ''
-
-        if nickname and email:
-            condition = 'nickname = \'{}\' OR email = \'{}\''.format(nickname, email)
-        elif nickname:
-            condition = 'nickname = \'{}\''.format(nickname)
-        elif email:
-            condition = 'email = \'{}\''.format(email)
-
-        return self.db_socket.execute_query(query.format(condition))
+        return self.db_socket.execute_query(query)
 
     def update_user(self, nickname, email='', fullname='', about=''):
-        query_template = '''
-            UPDATE users SET {}
-            WHERE nickname='{}'
+        fields = make_kv_list(
+            email=email,
+            fullname=fullname,
+            about=about,
+        )
+        query = Template('''
+            UPDATE users SET
+            {% for i, field in fields %}
+              {{ field.key }} = '{{ field.value }}'
+              {% if fields_len > 1 and i < fields_len - 1 %},{% endif %}
+            {% endfor %}
+            WHERE nickname='{{ nickname }}'
             RETURNING about, email, fullname, nickname;
-        '''
-
-        update = ''
-
-        if email:
-            update += 'email = \'{}\''.format(email)
-
-        if fullname:
-            if update:
-                update += ', '
-            update += 'fullname = \'{}\''.format(fullname)
-
-        if about:
-            if update:
-                update += ', '
-            update += 'about = \'{}\''.format(about)
-
-        query = query_template.format(update, nickname)
+        ''').render(
+            nickname=nickname,
+            fields=enumerate(fields),
+            fields_len=len(fields),
+        )
 
         return self.db_socket.execute_query(query)
 
