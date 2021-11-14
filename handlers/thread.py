@@ -8,6 +8,8 @@ from handlers.helpers import (
     response_with_error,
 )
 from handlers.validators import (
+    some,
+    is_digit,
     is_non_digit,
     is_nickname,
     not_null_str,
@@ -20,7 +22,7 @@ from models.forum import forum_model
 from models.thread import thread_model
 
 
-@add_logging()
+@add_logging
 @validate_route_param(
     name='slug',
     validator=is_non_digit,
@@ -149,7 +151,7 @@ async def create_thread(request: web.Request):
     )
 
 
-@add_logging()
+@add_logging
 @validate_route_param(
     name='slug',
     validator=is_non_digit,
@@ -209,3 +211,84 @@ async def get_threads(request: web.Request):
         data=threads_response,
         status=web.HTTPOk.status_code,
     )
+
+
+@add_logging
+@validate_route_param(
+    name='slug_or_id',
+    validator=some(
+        is_non_digit,
+        is_non_negative,
+    ),
+)
+@validate_json(
+    field(
+        name='nickname',
+        required=True,
+        field_type=str,
+        validator=is_nickname,
+    ),
+    field(
+        name='voice',
+        required=True,
+        field_type=int,
+    ),
+)
+async def make_thread_vote(request: web.Request):
+    body = await request.json()
+    # TODO field "votes" must be dependent on "voice"
+    voice = body.get('voice')
+    nickname = body.get('nickname')
+    thread_slug_or_id = request.match_info['slug_or_id']
+    thread_id = int(thread_slug_or_id) if is_digit(thread_slug_or_id) else None
+
+    found_threads, error = await thread_model.get_thread(
+        slug=thread_slug_or_id,
+        thread_id=thread_id,
+    )
+
+    if error:
+        return response_with_error()
+
+    if not found_threads or not len(found_threads):
+        return web.json_response(
+            data={'message': 'thread not found'},
+            status=web.HTTPNotFound.status_code,
+        )
+
+    found_votes, error = await thread_model.get_vote(
+        author=nickname,
+        thread_id=found_threads[0].get('id'),
+    )
+
+    if error:
+        return response_with_error()
+
+    if found_votes and len(found_votes):
+        return web.json_response(
+            data=thread_model.serialize(found_threads[0]),
+            status=web.HTTPOk.status_code,
+        )
+
+    _, error = await thread_model.add_thread_vote(
+        thread_id=found_threads[0].get('id'),
+        nickname=nickname,
+    )
+
+    if error:
+        return response_with_error()
+
+    # TODO rm that and make smth like transaction or just function
+    updated_threads, error = await thread_model.get_thread(
+        slug=thread_slug_or_id,
+        thread_id=thread_id,
+    )
+
+    if error:
+        return response_with_error()
+
+    for thread in updated_threads:
+        return web.json_response(
+            data=thread_model.serialize(thread),
+            status=web.HTTPOk.status_code,
+        )

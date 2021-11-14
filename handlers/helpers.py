@@ -6,21 +6,18 @@ from handlers.validators import default_validator
 from logger import app_logger
 
 
-def add_logging():
-    def wrapper(handler):
-        async def inner(request: web.Request):
-            body = await request.text()
-            app_logger.info('GOT {} {}, body: {}'.format(
-                request.method,
-                request.rel_url,
-                body,
-            ))
+def add_logging(handler):
+    async def inner(request: web.Request):
+        body = await request.text()
+        app_logger.info('GOT {} {}, body: {}'.format(
+            request.method,
+            request.rel_url,
+            body,
+        ))
 
-            return await handler(request)
+        return await handler(request)
 
-        return inner
-
-    return wrapper
+    return inner
 
 
 def response_with_error():

@@ -17,11 +17,11 @@ from handlers.validators import (
     is_non_negative,
     is_bool_str,
 )
-from models.posts import post_model
+from models.post import post_model
 from models.thread import thread_model
 
 
-@add_logging()
+@add_logging
 @validate_route_param(
     name='slug_or_id',
     validator=some(

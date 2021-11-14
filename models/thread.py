@@ -7,28 +7,22 @@ from models.helpers import (
 
 class ThreadModel(BaseModel):
     def get_thread(self, slug, thread_id=None):
-        slug_is_valid = slug and isinstance(slug, str)
-        thread_is_valid = thread_id is not None and isinstance(thread_id, int)
+        thread_id_is_valid = thread_id is not None and isinstance(thread_id, int)
 
         query = Template('''
             SELECT id, message, author, created, forum, slug, title, votes
             FROM threads
             WHERE
-            {% if slug_is_valid %}
-              slug = '{{ thread_slug }}'
-            {% endif %}
-            {% if slug_is_valid and thread_is_valid  %}
-              OR
-            {% endif %}
-            {% if thread_is_valid %}
+            {% if thread_id_is_valid %}
               id = {{ thread_id }}
+            {% else %}
+              slug = '{{ thread_slug }}'
             {% endif %}
             ;
         ''').render(
             thread_slug=slug,
             thread_id=thread_id,
-            slug_is_valid=slug_is_valid,
-            thread_is_valid=thread_is_valid,
+            thread_id_is_valid=thread_id_is_valid,
         )
 
         return self.db_socket.execute_query(query)
@@ -70,25 +64,50 @@ class ThreadModel(BaseModel):
         return self.db_socket.execute_query(query)
 
     def get_threads_by_forum(self, slug, limit=None, since=None, desc=None):
-        query = '''
+        query = Template('''
                 SELECT id, author, created, forum, message, slug, title, votes
                 FROM threads
-                WHERE forum = '{}'
-                '''.format(slug)
+                WHERE forum = '{{ slug }}'
+                {% if since %}
+                    AND created {{ operator }} '{{ since }}'
+                {% endif %}
+                ORDER BY created {% if is_desc %}DESC{% endif %}
+                {% if has_limit %}
+                    LIMIT {{ limit }}
+                {% endif %}
+                ;
+        ''').render(
+            slug=slug,
+            since=since,
+            operator='<=' if desc == 'true' else '>=',
+            has_limit=limit is not None,
+            limit=limit,
+            is_desc=desc == 'true',
+        )
 
-        operator = '<=' if desc == 'true' else '>='
+        return self.db_socket.execute_query(query)
 
-        if since is not None:
-            query += 'AND created {} \'{}\''.format(operator, since)
+    def get_vote(self, author, thread_id):
+        query = Template('''
+            SELECT author, thread
+            FROM thread_votes
+            WHERE author = '{{ author }}'
+            AND thread = '{{ thread_id }}';
+        ''').render(
+            author=author,
+            thread_id=thread_id,
+        )
 
-        query += '\nORDER BY created'.format(limit)
+        return self.db_socket.execute_query(query)
 
-        if desc == 'true':
-            query += ' DESC'.format(limit)
-        if limit is not None:
-            query += '\nLIMIT {}'.format(limit)
-
-        query += ';'
+    def add_thread_vote(self, thread_id, nickname):
+        query = Template('''
+            INSERT INTO thread_votes
+            (author, thread) VALUES ('{{ author }}', {{ thread_id }});
+        ''').render(
+            author=nickname,
+            thread_id=thread_id,
+        )
 
         return self.db_socket.execute_query(query)
 

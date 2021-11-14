@@ -1,17 +1,19 @@
 from aiohttp import web
 from handlers.user import create_user, get_user, modify_user
 from handlers.forum import create_forum, get_forum
-from handlers.thread import create_thread, get_threads
-from handlers.posts import create_posts
+from handlers.thread import create_thread, get_threads, make_thread_vote
+from handlers.post import create_posts
 from logger import app_logger
 
 
+# TODO: close db socket before exiting app
 # TODO: git hooks
 # TODO: more smart templates for SQL
 # TODO: run flake8 and fix all errors
 # TODO: make yaml config
 # TODO: check SQL injections
 # TODO: may be provide body from validate_json
+# TODO: make own tests
 # TODO: catch and log all project exceptions
 # TODO: pep8 warnings
 # TODO: docker-compose
@@ -30,6 +32,7 @@ app.router.add_route('POST', '/api/forum/{slug}/create', create_thread)
 app.router.add_route('GET', '/api/forum/{slug}/threads', get_threads)
 
 app.router.add_route('POST', '/api/thread/{slug_or_id}/create', create_posts)
+app.router.add_route('POST', '/api/thread/{slug_or_id}/vote', make_thread_vote)
 
 app_logger.info('app started')
 web.run_app(app, port=5000)

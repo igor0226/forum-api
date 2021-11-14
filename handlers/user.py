@@ -14,7 +14,7 @@ from handlers.validators import (
 )
 
 
-@add_logging()
+@add_logging
 @validate_route_param(
     name='nickname',
     validator=is_nickname,
@@ -86,7 +86,7 @@ async def create_user(request: web.Request):
     )
 
 
-@add_logging()
+@add_logging
 @validate_route_param(
     name='nickname',
     validator=is_nickname,
@@ -113,7 +113,7 @@ async def get_user(request: web.Request):
     )
 
 
-@add_logging()
+@add_logging
 @validate_route_param(
     name='nickname',
     validator=is_nickname,

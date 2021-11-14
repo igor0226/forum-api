@@ -5,11 +5,12 @@ DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS forums CASCADE;
 DROP TABLE IF EXISTS threads CASCADE;
 DROP TABLE IF EXISTS posts CASCADE;
+DROP TABLE IF EXISTS votes CASCADE;
 DROP FUNCTION IF EXISTS get_non_existing_posts;
 
 CREATE TABLE users
 (
-  id BIGSERIAL PRIMARY KEY NOT NULL,
+  id BIGSERIAL PRIMARY KEY,
   about TEXT,
   email CITEXT NOT NULL UNIQUE,
   fullname TEXT NOT NULL,
@@ -18,7 +19,7 @@ CREATE TABLE users
 
 CREATE TABLE forums
 (
-  id BIGSERIAL PRIMARY KEY NOT NULL,
+  id BIGSERIAL PRIMARY KEY,
   posts BIGINT DEFAULT 0,
   slug CITEXT UNIQUE,
   threads BIGINT DEFAULT 0,
@@ -29,7 +30,7 @@ CREATE TABLE forums
 
 CREATE TABLE threads
 (
-  id BIGSERIAL PRIMARY KEY NOT NULL,
+  id BIGSERIAL PRIMARY KEY,
   author CITEXT NOT NULL,
   created TIMESTAMP WITH TIME ZONE,
   forum CITEXT NOT NULL,
@@ -43,7 +44,7 @@ CREATE TABLE threads
 
 CREATE TABLE posts
 (
-  id BIGSERIAL PRIMARY KEY NOT NULL,
+  id BIGSERIAL PRIMARY KEY,
   created TIMESTAMP WITH TIME ZONE,
   isEdited BOOLEAN DEFAULT FALSE,
   message TEXT NOT NULL,
@@ -54,6 +55,16 @@ CREATE TABLE posts
   FOREIGN KEY (forum) REFERENCES forums(slug),
   FOREIGN KEY (thread) REFERENCES threads(id),
   FOREIGN KEY (author) REFERENCES users(nickname)
+);
+
+CREATE TABLE thread_votes
+(
+    id BIGSERIAL PRIMARY KEY,
+    author CITEXT NOT NULL,
+    thread BIGINT NOT NULL,
+    UNIQUE(author, thread),
+    FOREIGN KEY (author) REFERENCES users(nickname),
+    FOREIGN KEY (thread) REFERENCES threads(id)
 );
 
 CREATE FUNCTION
@@ -79,3 +90,24 @@ CREATE FUNCTION
         DROP TABLE temp_posts;
       END;
   $$ LANGUAGE plpgsql;
+
+CREATE FUNCTION update_thread_votes_counter() RETURNS TRIGGER AS
+$$
+    DECLARE
+        old_votes BIGINT;
+    BEGIN
+        SELECT votes
+        INTO old_votes
+        FROM threads
+        WHERE id = NEW.thread;
+
+        UPDATE threads SET votes = old_votes + 1
+        WHERE id = NEW.thread;
+
+        RETURN NEW;
+    END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER t_votes
+AFTER INSERT ON thread_votes
+FOR EACH ROW EXECUTE PROCEDURE update_thread_votes_counter();

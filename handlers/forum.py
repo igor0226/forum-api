@@ -15,7 +15,7 @@ from handlers.validators import (
 )
 
 
-@add_logging()
+@add_logging
 @validate_json(
     field(
         name='posts',
@@ -97,7 +97,7 @@ async def create_forum(request: web.Request):
     )
 
 
-@add_logging()
+@add_logging
 @validate_route_param(
     name='slug',
     validator=is_non_digit,
