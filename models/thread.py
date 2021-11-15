@@ -89,10 +89,10 @@ class ThreadModel(BaseModel):
 
     def get_vote(self, author, thread_id):
         query = Template('''
-            SELECT author, thread
+            SELECT author, thread, vote
             FROM thread_votes
-            WHERE author = '{{ author }}'
-            AND thread = '{{ thread_id }}';
+            WHERE author = '{{ author }}' AND
+            thread = '{{ thread_id }}';
         ''').render(
             author=author,
             thread_id=thread_id,
@@ -100,13 +100,29 @@ class ThreadModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
-    def add_thread_vote(self, thread_id, nickname):
+    def update_thread_vote(self, thread_id, nickname, vote):
         query = Template('''
-            INSERT INTO thread_votes
-            (author, thread) VALUES ('{{ author }}', {{ thread_id }});
+            UPDATE thread_votes
+            SET vote = {{ vote }}
+            WHERE author = '{{ author }}' AND
+            thread = {{ thread_id }};
         ''').render(
             author=nickname,
             thread_id=thread_id,
+            vote=vote,
+        )
+
+        return self.db_socket.execute_query(query)
+
+    def add_thread_vote(self, thread_id, nickname, vote):
+        query = Template('''
+            INSERT INTO thread_votes
+            (author, thread, vote)
+            VALUES ('{{ author }}', {{ thread_id }}, {{ vote }});
+        ''').render(
+            author=nickname,
+            thread_id=thread_id,
+            vote=vote,
         )
 
         return self.db_socket.execute_query(query)

@@ -236,7 +236,6 @@ async def get_threads(request: web.Request):
 )
 async def make_thread_vote(request: web.Request):
     body = await request.json()
-    # TODO field "votes" must be dependent on "voice"
     voice = body.get('voice')
     nickname = body.get('nickname')
     thread_slug_or_id = request.match_info['slug_or_id']
@@ -265,18 +264,25 @@ async def make_thread_vote(request: web.Request):
         return response_with_error()
 
     if found_votes and len(found_votes):
-        return web.json_response(
-            data=thread_model.serialize(found_threads[0]),
-            status=web.HTTPOk.status_code,
+        # TODO select only method and rm double if
+        if found_votes[0].get('vote') != voice:
+            _, error = await thread_model.update_thread_vote(
+                thread_id=found_threads[0].get('id'),
+                nickname=nickname,
+                vote=voice,
+            )
+
+            if error:
+                return response_with_error()
+    else:
+        _, error = await thread_model.add_thread_vote(
+            thread_id=found_threads[0].get('id'),
+            nickname=nickname,
+            vote=voice,
         )
 
-    _, error = await thread_model.add_thread_vote(
-        thread_id=found_threads[0].get('id'),
-        nickname=nickname,
-    )
-
-    if error:
-        return response_with_error()
+        if error:
+            return response_with_error()
 
     # TODO rm that and make smth like transaction or just function
     updated_threads, error = await thread_model.get_thread(

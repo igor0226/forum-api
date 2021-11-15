@@ -62,6 +62,7 @@ CREATE TABLE thread_votes
     id BIGSERIAL PRIMARY KEY,
     author CITEXT NOT NULL,
     thread BIGINT NOT NULL,
+    vote INT,
     UNIQUE(author, thread),
     FOREIGN KEY (author) REFERENCES users(nickname),
     FOREIGN KEY (thread) REFERENCES threads(id)
@@ -96,18 +97,30 @@ $$
     DECLARE
         old_votes BIGINT;
     BEGIN
-        SELECT votes
-        INTO old_votes
-        FROM threads
-        WHERE id = NEW.thread;
+        IF TG_OP = 'INSERT' THEN
+            SELECT votes
+            INTO old_votes
+            FROM threads
+            WHERE id = NEW.thread;
 
-        UPDATE threads SET votes = old_votes + 1
-        WHERE id = NEW.thread;
+            UPDATE threads SET votes = old_votes + NEW.vote
+            WHERE id = NEW.thread;
 
-        RETURN NEW;
+            RETURN NEW;
+        ELSIF TG_OP = 'UPDATE' THEN
+            SELECT votes
+            INTO old_votes
+            FROM threads
+            WHERE id = NEW.thread;
+
+            UPDATE threads SET votes = old_votes - OLD.vote + NEW.vote
+            WHERE id = NEW.thread;
+
+            RETURN NEW;
+        END IF;
     END
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER t_votes
-AFTER INSERT ON thread_votes
+AFTER INSERT OR UPDATE ON thread_votes
 FOR EACH ROW EXECUTE PROCEDURE update_thread_votes_counter();
