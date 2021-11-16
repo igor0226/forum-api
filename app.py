@@ -6,6 +6,7 @@ from handlers.post import create_posts
 from logger import app_logger
 
 
+# TODO use fetchVal/fetchRow where it is possible
 # TODO: close db socket before exiting app
 # TODO: git hooks
 # TODO: more smart templates for SQL

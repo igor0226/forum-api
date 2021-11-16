@@ -255,46 +255,40 @@ async def make_thread_vote(request: web.Request):
             status=web.HTTPNotFound.status_code,
         )
 
+    thread_to_update = found_threads[0]
     found_votes, error = await thread_model.get_vote(
         author=nickname,
-        thread_id=found_threads[0].get('id'),
+        thread_id=thread_to_update.get('id'),
     )
 
     if error:
         return response_with_error()
 
-    if found_votes and len(found_votes):
-        # TODO select only method and rm double if
-        if found_votes[0].get('vote') != voice:
-            _, error = await thread_model.update_thread_vote(
-                thread_id=found_threads[0].get('id'),
-                nickname=nickname,
-                vote=voice,
-            )
-
-            if error:
-                return response_with_error()
-    else:
-        _, error = await thread_model.add_thread_vote(
-            thread_id=found_threads[0].get('id'),
-            nickname=nickname,
-            vote=voice,
-        )
-
-        if error:
-            return response_with_error()
-
-    # TODO rm that and make smth like transaction or just function
-    updated_threads, error = await thread_model.get_thread(
-        slug=thread_slug_or_id,
-        thread_id=thread_id,
+    vote_exists = found_votes and len(found_votes)
+    thread_action = (
+        thread_model.update_thread_vote if vote_exists
+        else thread_model.add_thread_vote
+    )
+    _, error = await thread_action(
+        thread_id=thread_to_update.get('id'),
+        nickname=nickname,
+        vote=voice,
     )
 
     if error:
         return response_with_error()
 
-    for thread in updated_threads:
-        return web.json_response(
-            data=thread_model.serialize(thread),
-            status=web.HTTPOk.status_code,
-        )
+    new_thread_votes = thread_to_update.get('votes') + voice
+
+    if vote_exists:
+        new_thread_votes -= found_votes[0].get('vote')
+
+    updated_thread = {
+        **thread_to_update,
+        'votes': new_thread_votes,
+    }
+
+    return web.json_response(
+        data=thread_model.serialize(updated_thread),
+        status=web.HTTPOk.status_code,
+    )
