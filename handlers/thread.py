@@ -292,3 +292,35 @@ async def make_thread_vote(request: web.Request):
         data=thread_model.serialize(updated_thread),
         status=web.HTTPOk.status_code,
     )
+
+
+@add_logging
+@validate_route_param(
+    name='slug_or_id',
+    validator=some(
+        is_non_digit,
+        is_non_negative,
+    ),
+)
+async def get_thread_details(request: web.Request):
+    thread_slug_or_id = request.match_info['slug_or_id']
+    thread_id = int(thread_slug_or_id) if is_digit(thread_slug_or_id) else None
+
+    found_threads, error = await thread_model.get_thread(
+        slug=thread_slug_or_id,
+        thread_id=thread_id,
+    )
+
+    if error:
+        return response_with_error()
+
+    if not found_threads or not len(found_threads):
+        return web.json_response(
+            data={'message': 'thread not found'},
+            status=web.HTTPNotFound.status_code,
+        )
+
+    return web.json_response(
+        data=thread_model.serialize(found_threads[0]),
+        status=web.HTTPOk.status_code,
+    )
