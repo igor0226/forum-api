@@ -98,7 +98,7 @@ class PostModel(BaseModel):
             parent, forum, thread, author
             FROM posts
             WHERE thread = {{ thread_id }}
-            ORDER BY created
+            ORDER BY created, id
             {% if has_limit %} LIMIT {{ limit }} {% endif %};
         ''').render(
             thread_id=thread_id,
