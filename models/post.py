@@ -92,12 +92,28 @@ class PostModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
+    def get_thread_posts(self, thread_id, limit):
+        query = Template('''
+            SELECT id, created, isEdited, message,
+            parent, forum, thread, author
+            FROM posts
+            WHERE thread = {{ thread_id }}
+            ORDER BY created
+            {% if has_limit %} LIMIT {{ limit }} {% endif %};
+        ''').render(
+            thread_id=thread_id,
+            has_limit=limit is not None,
+            limit=limit,
+        )
+
+        return self.db_socket.execute_query(query)
+
     @staticmethod
     def serialize(db_object):
         return {
             'id': db_object.get('id'),
             'created': serialize_pg_timestamp(
-                db_object.get('created'),
+                timestamp=db_object.get('created'),
             ),
             'isEdited': db_object.get('isEdited'),
             'message': db_object.get('message'),

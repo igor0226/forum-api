@@ -60,3 +60,13 @@ def is_timestamp(val: str):
 
 def is_bool_str(val):
     return val == 'true' or val == 'false'
+
+
+def one_of(*legal_values: str):
+    def inner(val):
+        if val in legal_values:
+            return True
+
+        return False
+
+    return inner

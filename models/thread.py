@@ -133,7 +133,7 @@ class ThreadModel(BaseModel):
             'id': db_object.get('id'),
             'author': db_object.get('author'),
             'created': serialize_pg_timestamp(
-                db_object.get('created'),
+                timestamp=db_object.get('created'),
             ),
             'forum': db_object.get('forum'),
             'message': db_object.get('message'),
