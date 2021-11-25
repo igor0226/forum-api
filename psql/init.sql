@@ -51,6 +51,7 @@ CREATE TABLE posts
   parent BIGINT,
   forum CITEXT,
   thread BIGINT,
+  path CITEXT,
   author CITEXT NOT NULL,
   FOREIGN KEY (forum) REFERENCES forums(slug),
   FOREIGN KEY (thread) REFERENCES threads(id),
@@ -97,30 +98,54 @@ $$
     DECLARE
         old_votes BIGINT;
     BEGIN
-        IF TG_OP = 'INSERT' THEN
-            SELECT votes
-            INTO old_votes
-            FROM threads
-            WHERE id = NEW.thread;
+        SELECT votes
+        INTO old_votes
+        FROM threads
+        WHERE id = NEW.thread;
 
+        IF TG_OP = 'INSERT' THEN
             UPDATE threads SET votes = old_votes + NEW.vote
             WHERE id = NEW.thread;
-
-            RETURN NEW;
         ELSIF TG_OP = 'UPDATE' THEN
-            SELECT votes
-            INTO old_votes
-            FROM threads
-            WHERE id = NEW.thread;
-
             UPDATE threads SET votes = old_votes - OLD.vote + NEW.vote
             WHERE id = NEW.thread;
-
-            RETURN NEW;
         END IF;
+
+        RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER t_votes
 AFTER INSERT OR UPDATE ON thread_votes
 FOR EACH ROW EXECUTE PROCEDURE update_thread_votes_counter();
+
+CREATE FUNCTION create_post_path() RETURNS TRIGGER AS
+$$
+    DECLARE
+        parent_post_path CITEXT;
+        new_post_path CITEXT;
+    BEGIN
+        IF NEW.parent IS NOT NULL THEN
+            SELECT path
+            INTO parent_post_path
+            FROM POSTS
+            WHERE id = NEW.parent;
+
+            IF parent_post_path IS NOT NULL THEN
+                new_post_path := parent_post_path || '.' || NEW.id::CITEXT;
+            END IF;
+        END IF;
+
+        IF parent_post_path IS NULL THEN
+            new_post_path := NEW.id::CITEXT;
+        END IF;
+
+        NEW.path = new_post_path;
+
+        RETURN NEW;
+    END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER t_path
+BEFORE INSERT ON posts
+FOR EACH ROW EXECUTE PROCEDURE create_post_path();

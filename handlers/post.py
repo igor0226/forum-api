@@ -200,22 +200,28 @@ async def get_thread_posts(request: web.Request):
 
     limit = request.query.get('limit')
     since = request.query.get('since')
-    sort = request.query.get('sort')
+    sort = request.query.get('sort') or 'flat'
     desc = request.query.get('desc')
     thread_id = found_threads[0].get('id')
 
+    # TODO first run tree sort failed
+    # TODO potentially failing at test №6
     found_posts, error = await post_model.get_thread_posts(
         thread_id=thread_id,
         limit=limit,
+        sort=sort,
+        desc=True if desc == 'true' else False,
+        # since=since,
     )
 
     if error:
         return response_with_error()
 
     posts_answer = []
+
     for post in found_posts:
         posts_answer.append(
-            post_model.serialize(post)
+            post_model.serialize(post),
         )
 
     return web.json_response(
