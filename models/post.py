@@ -95,7 +95,7 @@ class PostModel(BaseModel):
     def get_thread_posts(self, thread_id, limit, sort, desc):
         query = Template('''
             SELECT id, created, isEdited, message,
-            parent, forum, thread, author, path
+            parent, forum, thread, author, path, innerRootPost
             FROM posts
             WHERE thread = {{ thread_id }}
             {% if sort == 'flat' %}
@@ -103,7 +103,7 @@ class PostModel(BaseModel):
             {% elif sort == 'tree' %}
                 ORDER BY path {% if desc %} DESC {% endif %}
             {% elif sort == 'parent_tree' %}
-                ORDER BY {% if desc %} parent DESC, id ASC {% else %} path {% endif %}
+                ORDER BY {% if desc %} innerRootPost DESC, path ASC {% else %} path {% endif %}
             {% endif %}
             {% if has_limit %} LIMIT {{ limit }} {% endif %};
         ''').render(
@@ -123,7 +123,7 @@ class PostModel(BaseModel):
             'created': serialize_pg_timestamp(
                 timestamp=db_object.get('created'),
             ),
-            'isEdited': db_object.get('isEdited'),
+            'isEdited': db_object.get('isEdited'.lower()),
             'message': db_object.get('message'),
             'parent': db_object.get('parent'),
             'forum': db_object.get('forum'),

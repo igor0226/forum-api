@@ -49,6 +49,7 @@ CREATE TABLE posts
   isEdited BOOLEAN DEFAULT FALSE,
   message TEXT NOT NULL,
   parent BIGINT,
+  innerRootPost BIGINT,
   forum CITEXT,
   thread BIGINT,
   path CITEXT,
@@ -138,6 +139,9 @@ $$
 
         IF parent_post_path IS NULL THEN
             new_post_path := NEW.id::CITEXT;
+            NEW.innerRootPost = NEW.id;
+        ELSE
+            NEW.innerRootPost = NEW.parent;
         END IF;
 
         NEW.path = new_post_path;
