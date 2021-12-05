@@ -11,7 +11,7 @@ class PostModel(BaseModel):
     def get_post(self, post_id):
         query = Template('''
             SELECT id, created, isEdited, message,
-            parent, forum, thread, author, path
+            parent, forum, thread, author
             FROM posts
             WHERE id = '{{ post_id }}';
         ''').render(post_id=post_id)
@@ -92,19 +92,25 @@ class PostModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
-    def get_thread_posts(self, thread_id, limit, sort, desc):
+    def get_thread_posts(self, thread_id, limit, sort, desc, since):
         query = Template('''
             SELECT id, created, isEdited, message,
-            parent, forum, thread, author, path, innerRootPost
+            parent, forum, thread, author, innerRootPost, pathArray
             FROM posts
             WHERE thread = {{ thread_id }}
+
+            {% if has_since %}
+                AND id {% if desc %} < {% else %} > {% endif %} {{ since }}
+            {% endif %}
+
             {% if sort == 'flat' %}
                 ORDER BY {% if desc %} id DESC {% else %} id {% endif %}
             {% elif sort == 'tree' %}
-                ORDER BY path {% if desc %} DESC {% endif %}
+                ORDER BY pathArray {% if desc %} DESC {% endif %}
             {% elif sort == 'parent_tree' %}
-                ORDER BY {% if desc %} innerRootPost DESC, path ASC {% else %} path {% endif %}
+                ORDER BY {% if desc %} innerRootPost DESC, pathArray ASC {% else %} pathArray {% endif %}
             {% endif %}
+
             {% if has_limit %} LIMIT {{ limit }} {% endif %};
         ''').render(
             thread_id=thread_id,
@@ -112,6 +118,8 @@ class PostModel(BaseModel):
             limit=limit,
             sort=sort,
             desc=desc,
+            has_since=since is not None,
+            since=since,
         )
 
         return self.db_socket.execute_query(query)
@@ -129,7 +137,6 @@ class PostModel(BaseModel):
             'forum': db_object.get('forum'),
             'thread': db_object.get('thread'),
             'author': db_object.get('author'),
-            'path': db_object.get('path'),
         }
 
 

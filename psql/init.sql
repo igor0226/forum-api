@@ -52,7 +52,7 @@ CREATE TABLE posts
   innerRootPost BIGINT,
   forum CITEXT,
   thread BIGINT,
-  path CITEXT,
+  pathArray BIGINT[],
   author CITEXT NOT NULL,
   FOREIGN KEY (forum) REFERENCES forums(slug),
   FOREIGN KEY (thread) REFERENCES threads(id),
@@ -123,28 +123,28 @@ FOR EACH ROW EXECUTE PROCEDURE update_thread_votes_counter();
 CREATE FUNCTION create_post_path() RETURNS TRIGGER AS
 $$
     DECLARE
-        parent_post_path CITEXT;
-        new_post_path CITEXT;
+        parent_post_path_array BIGINT[];
+        new_post_path_array BIGINT[];
     BEGIN
         IF NEW.parent IS NOT NULL THEN
-            SELECT path
-            INTO parent_post_path
+            SELECT pathArray
+            INTO parent_post_path_array
             FROM POSTS
             WHERE id = NEW.parent;
 
-            IF parent_post_path IS NOT NULL THEN
-                new_post_path := parent_post_path || '.' || NEW.id::CITEXT;
+            IF parent_post_path_array IS NOT NULL THEN
+                new_post_path_array := array_append(parent_post_path_array, NEW.id);
             END IF;
         END IF;
 
-        IF parent_post_path IS NULL THEN
-            new_post_path := NEW.id::CITEXT;
+        IF parent_post_path_array IS NULL THEN
             NEW.innerRootPost = NEW.id;
+            new_post_path_array := ARRAY[NEW.id]::BIGINT[];
         ELSE
             NEW.innerRootPost = NEW.parent;
         END IF;
 
-        NEW.path = new_post_path;
+        NEW.pathArray = new_post_path_array;
 
         RETURN NEW;
     END

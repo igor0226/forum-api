@@ -161,7 +161,7 @@ async def create_posts(request: web.Request):
     field(
         name='since',
         required=False,
-        validator=is_timestamp,
+        validator=is_non_negative,
     ),
     field(
         name='sort',
@@ -204,14 +204,12 @@ async def get_thread_posts(request: web.Request):
     desc = request.query.get('desc')
     thread_id = found_threads[0].get('id')
 
-    # TODO first run tree sort failed
-    # TODO potentially failing at test №6
     found_posts, error = await post_model.get_thread_posts(
         thread_id=thread_id,
         limit=limit,
         sort=sort,
-        desc=True if desc == 'true' else False,
-        # since=since,
+        desc=desc == 'true',
+        since=since,
     )
 
     if error:
