@@ -203,6 +203,18 @@ async def get_thread_posts(request: web.Request):
     sort = request.query.get('sort') or 'flat'
     desc = request.query.get('desc')
     thread_id = found_threads[0].get('id')
+    since_path = None
+
+    if since is not None:
+        last_posts, error = await post_model.get_post(post_id=since)
+
+        if error:
+            return response_with_error()
+
+        if len(last_posts):
+            since_path = last_posts[0].get('pathArray'.lower())
+        else:
+            since_path = []
 
     found_posts, error = await post_model.get_thread_posts(
         thread_id=thread_id,
@@ -210,6 +222,7 @@ async def get_thread_posts(request: web.Request):
         sort=sort,
         desc=desc == 'true',
         since=since,
+        since_path=since_path,
     )
 
     if error:
@@ -225,4 +238,28 @@ async def get_thread_posts(request: web.Request):
     return web.json_response(
         data=posts_answer,
         status=web.HTTPOk.status_code,
+    )
+
+
+@add_logging
+@validate_route_param(
+    name='id',
+    validator=is_non_negative
+)
+async def get_post(request: web.Request):
+    post_id = request.match_info['id']
+    found_posts, error = await post_model.get_post(post_id)
+
+    if error:
+        return response_with_error()
+
+    if not found_posts or not len(found_posts):
+        return web.json_response(
+            status=web.HTTPNotFound.status_code,
+            data={'message': 'post not found'}
+        )
+
+    return web.json_response(
+        status=web.HTTPOk.status_code,
+        data=post_model.serialize(found_posts[0])
     )

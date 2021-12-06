@@ -2,7 +2,7 @@ from aiohttp import web
 from handlers.user import create_user, get_user, modify_user
 from handlers.forum import create_forum, get_forum
 from handlers.thread import create_thread, get_threads, make_thread_vote, get_thread_details
-from handlers.post import create_posts, get_thread_posts
+from handlers.post import create_posts, get_thread_posts, get_post
 from logger import app_logger
 
 
@@ -37,6 +37,8 @@ app.router.add_route('GET', '/api/thread/{slug_or_id}/details', get_thread_detai
 
 app.router.add_route('POST', '/api/thread/{slug_or_id}/create', create_posts)
 app.router.add_route('GET', '/api/thread/{slug_or_id}/posts', get_thread_posts)
+
+app.router.add_route('GET', '/api/post/{id}/details', get_post)
 
 app_logger.info('app started')
 web.run_app(app, port=5000)

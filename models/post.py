@@ -11,7 +11,7 @@ class PostModel(BaseModel):
     def get_post(self, post_id):
         query = Template('''
             SELECT id, created, isEdited, message,
-            parent, forum, thread, author
+            parent, forum, thread, author, pathArray
             FROM posts
             WHERE id = '{{ post_id }}';
         ''').render(post_id=post_id)
@@ -92,7 +92,7 @@ class PostModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
-    def get_thread_posts(self, thread_id, limit, sort, desc, since):
+    def get_thread_posts(self, thread_id, limit, sort, desc, since, since_path):
         query = Template('''
             SELECT id, created, isEdited, message,
             parent, forum, thread, author, innerRootPost, pathArray
@@ -100,7 +100,11 @@ class PostModel(BaseModel):
             WHERE thread = {{ thread_id }}
 
             {% if has_since %}
-                AND id {% if desc %} < {% else %} > {% endif %} {{ since }}
+                {% if sort == 'flat' %}
+                    AND id {{ operator }} {{ since }}
+                {% elif sort == 'tree' or sort == 'parent_tree' %}
+                    AND pathArray {{ operator }} ARRAY{{ since_path }}::BIGINT[]
+                {% endif %}
             {% endif %}
 
             {% if sort == 'flat' %}
@@ -117,9 +121,11 @@ class PostModel(BaseModel):
             has_limit=limit is not None,
             limit=limit,
             sort=sort,
+            operator='<' if desc else '>',
             desc=desc,
             has_since=since is not None,
             since=since,
+            since_path=since_path,
         )
 
         return self.db_socket.execute_query(query)
