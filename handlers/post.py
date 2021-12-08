@@ -204,8 +204,9 @@ async def get_thread_posts(request: web.Request):
     desc = request.query.get('desc')
     thread_id = found_threads[0].get('id')
     since_path = None
+    limit_path = None
 
-    if since is not None:
+    if since is not None and sort != 'flat':
         last_posts, error = await post_model.get_post(post_id=since)
 
         if error:
@@ -216,6 +217,30 @@ async def get_thread_posts(request: web.Request):
         else:
             since_path = []
 
+    if limit is not None and sort == 'parent_tree':
+        last_posts, error = await post_model.get_parent_thread(
+            thread_id=thread_id,
+            limit=limit,
+            desc=desc == 'true',
+            since_path=since_path,
+        )
+
+        if error:
+            return response_with_error()
+
+        last_posts_len = len(last_posts)
+
+        if last_posts_len:
+            limit_path = last_posts[last_posts_len - 1].get('pathArray'.lower())
+
+            if int(limit) > last_posts_len - 1 and desc != 'true':
+                limit_path = [limit_path[0] + 1]
+            elif int(limit) > last_posts_len - 1 and desc == 'true':
+                limit_path = [-1]
+
+        else:
+            limit_path = []
+
     found_posts, error = await post_model.get_thread_posts(
         thread_id=thread_id,
         limit=limit,
@@ -223,6 +248,7 @@ async def get_thread_posts(request: web.Request):
         desc=desc == 'true',
         since=since,
         since_path=since_path,
+        limit_path=limit_path,
     )
 
     if error:

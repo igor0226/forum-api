@@ -92,7 +92,28 @@ class PostModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
-    def get_thread_posts(self, thread_id, limit, sort, desc, since, since_path):
+    def get_parent_thread(self, thread_id, limit, desc=False, since_path=None):
+        query = Template('''
+            SELECT parent, innerRootPost, pathArray
+            FROM posts
+            WHERE thread = '{{ thread_id }}' AND parent IS NULL
+            {% if has_since_path %}
+                AND pathArray {{ operator }} ARRAY{{ since_path }}::BIGINT[]
+            {% endif %}
+            ORDER BY innerRootPost {% if desc %} DESC {% endif %}
+            LIMIT {{ limit }} + 1;
+        ''').render(
+            thread_id=thread_id,
+            limit=limit,
+            desc=desc,
+            operator='<' if desc else '>',
+            has_since_path=since_path is not None,
+            since_path=since_path,
+        )
+
+        return self.db_socket.execute_query(query)
+
+    def get_thread_posts(self, thread_id, limit, sort, desc, since, since_path, limit_path):
         query = Template('''
             SELECT id, created, isEdited, message,
             parent, forum, thread, author, innerRootPost, pathArray
@@ -107,6 +128,10 @@ class PostModel(BaseModel):
                 {% endif %}
             {% endif %}
 
+            {% if sort == 'parent_tree' and has_limit %}
+                AND pathArray {{ inverted_operator }} ARRAY{{ limit_path }}::BIGINT[]
+            {% endif %}
+
             {% if sort == 'flat' %}
                 ORDER BY {% if desc %} id DESC {% else %} id {% endif %}
             {% elif sort == 'tree' %}
@@ -115,17 +140,19 @@ class PostModel(BaseModel):
                 ORDER BY {% if desc %} innerRootPost DESC, pathArray ASC {% else %} pathArray {% endif %}
             {% endif %}
 
-            {% if has_limit %} LIMIT {{ limit }} {% endif %};
+            {% if has_limit and sort != 'parent_tree' %} LIMIT {{ limit }} {% endif %};
         ''').render(
             thread_id=thread_id,
             has_limit=limit is not None,
             limit=limit,
             sort=sort,
             operator='<' if desc else '>',
+            inverted_operator='>' if desc else '<',
             desc=desc,
             has_since=since is not None,
             since=since,
             since_path=since_path,
+            limit_path=limit_path,
         )
 
         return self.db_socket.execute_query(query)
@@ -143,6 +170,7 @@ class PostModel(BaseModel):
             'forum': db_object.get('forum'),
             'thread': db_object.get('thread'),
             'author': db_object.get('author'),
+            'pathArray': db_object.get('patharray'),
         }
 
 
