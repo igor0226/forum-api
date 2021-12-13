@@ -201,10 +201,10 @@ async def get_thread_posts(request: web.Request):
     limit = request.query.get('limit')
     since = request.query.get('since')
     sort = request.query.get('sort') or 'flat'
-    desc = request.query.get('desc')
+    desc = request.query.get('desc') == 'true'
     thread_id = found_threads[0].get('id')
     since_path = None
-    limit_path = None
+    limit_root = None
 
     if since is not None and sort != 'flat':
         last_posts, error = await post_model.get_post(post_id=since)
@@ -214,14 +214,12 @@ async def get_thread_posts(request: web.Request):
 
         if len(last_posts):
             since_path = last_posts[0].get('pathArray'.lower())
-        else:
-            since_path = []
 
     if limit is not None and sort == 'parent_tree':
-        last_posts, error = await post_model.get_parent_thread(
+        last_posts, error = await post_model.get_parent_threads(
             thread_id=thread_id,
             limit=limit,
-            desc=desc == 'true',
+            desc=desc,
             since_path=since_path,
         )
 
@@ -231,24 +229,24 @@ async def get_thread_posts(request: web.Request):
         last_posts_len = len(last_posts)
 
         if last_posts_len:
-            limit_path = last_posts[last_posts_len - 1].get('pathArray'.lower())
+            limit_root = last_posts[last_posts_len - 1].get('id')
 
-            if int(limit) > last_posts_len - 1 and desc != 'true':
-                limit_path = [limit_path[0] + 1]
-            elif int(limit) > last_posts_len - 1 and desc == 'true':
-                limit_path = [-1]
+            if not desc:
+                limit_root += 1
+            elif desc:
+                limit_root -= 1
 
         else:
-            limit_path = []
+            limit_root = 0
 
     found_posts, error = await post_model.get_thread_posts(
         thread_id=thread_id,
         limit=limit,
         sort=sort,
-        desc=desc == 'true',
+        desc=desc,
         since=since,
         since_path=since_path,
-        limit_path=limit_path,
+        limit_root=limit_root,
     )
 
     if error:
@@ -288,4 +286,86 @@ async def get_post(request: web.Request):
     return web.json_response(
         status=web.HTTPOk.status_code,
         data=post_model.serialize(found_posts[0])
+    )
+
+
+@add_logging
+@validate_route_param(
+    name='id',
+    validator=is_non_negative
+)
+@validate_json(
+    # field(
+    #     name='author',
+    #     required=False,
+    #     field_type=str,
+    #     validator=is_nickname,
+    # ),
+    field(
+        name='created',
+        required=False,
+        field_type=str,
+        validator=is_timestamp,
+    ),
+    # field(
+    #     name='forum',
+    #     required=False,
+    #     field_type=str,
+    #     validator=is_non_digit,
+    # ),
+    field(
+        name='message',
+        required=False,
+        field_type=str,
+        validator=not_null_str,
+    ),
+    # field(
+    #     name='parent',
+    #     required=False,
+    #     field_type=int,
+    #     validator=is_non_negative,
+    # ),
+    # field(
+    #     name='thread',
+    #     required=False,
+    #     field_type=int,
+    #     validator=is_non_negative,
+    # ),
+)
+async def modify_post(request: web.Request):
+    post_id = request.match_info['id']
+    post_update = await request.json()
+    created = post_update.get('created')
+    message = post_update.get('message')
+    is_empty_update = not created and not message
+
+    found_posts, error = await post_model.get_post(id=post_id)
+
+    if error:
+        return response_with_error()
+
+    if not found_posts or not len(found_posts):
+        return web.json_response(
+            status=web.HTTPNotFound.status_code,
+            data={'message': 'post not found'},
+        )
+
+    if is_empty_update:
+        return web.json_response(
+            status=web.HTTPOk.status_code,
+            data=found_posts[0],
+        )
+
+    updated_posts, error = await post_model.modify_post(
+        post_id=post_id,
+        message=message,
+        created=created,
+    )
+
+    if error:
+        return response_with_error()
+
+    return web.json_response(
+        status=web.HTTPOk.status_code,
+        data=post_model.serialize(updated_posts[0]),
     )

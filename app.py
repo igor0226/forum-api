@@ -1,8 +1,8 @@
 from aiohttp import web
 from handlers.user import create_user, get_user, modify_user
 from handlers.forum import create_forum, get_forum
-from handlers.thread import create_thread, get_threads, make_thread_vote, get_thread_details
-from handlers.post import create_posts, get_thread_posts, get_post
+from handlers.thread import create_thread, get_threads, make_thread_vote, get_thread_details, modify_thread
+from handlers.post import create_posts, get_thread_posts, get_post, modify_post
 from logger import app_logger
 
 
@@ -34,11 +34,13 @@ app.router.add_route('GET', '/api/forum/{slug}/threads', get_threads)
 
 app.router.add_route('POST', '/api/thread/{slug_or_id}/vote', make_thread_vote)
 app.router.add_route('GET', '/api/thread/{slug_or_id}/details', get_thread_details)
+app.router.add_route('POST', '/api/thread/{slug_or_id}/details', modify_thread)
 
 app.router.add_route('POST', '/api/thread/{slug_or_id}/create', create_posts)
 app.router.add_route('GET', '/api/thread/{slug_or_id}/posts', get_thread_posts)
 
 app.router.add_route('GET', '/api/post/{id}/details', get_post)
+app.router.add_route('POST', '/api/post/{id}/details', modify_post)
 
 app_logger.info('app started')
 web.run_app(app, port=5000)

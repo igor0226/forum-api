@@ -92,16 +92,16 @@ class PostModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
-    def get_parent_thread(self, thread_id, limit, desc=False, since_path=None):
+    def get_parent_threads(self, thread_id, limit, desc=False, since_path=None):
         query = Template('''
-            SELECT parent, innerRootPost, pathArray
+            SELECT id, parent, pathArray
             FROM posts
             WHERE thread = '{{ thread_id }}' AND parent IS NULL
             {% if has_since_path %}
                 AND pathArray {{ operator }} ARRAY{{ since_path }}::BIGINT[]
             {% endif %}
-            ORDER BY innerRootPost {% if desc %} DESC {% endif %}
-            LIMIT {{ limit }} + 1;
+            ORDER BY pathArray[1] {% if desc %} DESC {% endif %}
+            LIMIT {{ limit }};
         ''').render(
             thread_id=thread_id,
             limit=limit,
@@ -113,23 +113,25 @@ class PostModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
-    def get_thread_posts(self, thread_id, limit, sort, desc, since, since_path, limit_path):
+    def get_thread_posts(self, thread_id, limit, sort, desc, since, since_path, limit_root):
         query = Template('''
             SELECT id, created, isEdited, message,
-            parent, forum, thread, author, innerRootPost, pathArray
+            parent, forum, thread, author, pathArray
             FROM posts
             WHERE thread = {{ thread_id }}
 
             {% if has_since %}
                 {% if sort == 'flat' %}
                     AND id {{ operator }} {{ since }}
-                {% elif sort == 'tree' or sort == 'parent_tree' %}
+                {% elif sort == 'tree' %}
                     AND pathArray {{ operator }} ARRAY{{ since_path }}::BIGINT[]
+                {% elif sort == 'parent_tree' %}
+                    AND pathArray[1] {{ operator }} {{ since_path[0] }}
                 {% endif %}
             {% endif %}
 
-            {% if sort == 'parent_tree' and has_limit %}
-                AND pathArray {{ inverted_operator }} ARRAY{{ limit_path }}::BIGINT[]
+            {% if has_limit and sort == 'parent_tree' %}
+                AND pathArray[1] {{ inverted_operator }} {{ limit_root }}
             {% endif %}
 
             {% if sort == 'flat' %}
@@ -137,7 +139,7 @@ class PostModel(BaseModel):
             {% elif sort == 'tree' %}
                 ORDER BY pathArray {% if desc %} DESC {% endif %}
             {% elif sort == 'parent_tree' %}
-                ORDER BY {% if desc %} innerRootPost DESC, pathArray ASC {% else %} pathArray {% endif %}
+                ORDER BY {% if desc %} pathArray[1] DESC, pathArray ASC {% else %} pathArray {% endif %}
             {% endif %}
 
             {% if has_limit and sort != 'parent_tree' %} LIMIT {{ limit }} {% endif %};
@@ -152,7 +154,30 @@ class PostModel(BaseModel):
             has_since=since is not None,
             since=since,
             since_path=since_path,
-            limit_path=limit_path,
+            limit_root=limit_root,
+        )
+
+        return self.db_socket.execute_query(query)
+
+    def modify_post(self, post_id, message, created):
+        query = Template('''
+            UPDATE posts SET
+    
+            {% if message %}
+                message = '{{ message }}'
+            {% endif %}
+
+            {% if created %}
+                created = '{{ created }}'
+            {% endif %}
+
+            WHERE id = {{ post_id }}
+            RETURNING id, created, isEdited, message,
+            parent, forum, thread, author;
+        ''').render(
+            post_id=post_id,
+            message=message,
+            created=created,
         )
 
         return self.db_socket.execute_query(query)
@@ -170,7 +195,7 @@ class PostModel(BaseModel):
             'forum': db_object.get('forum'),
             'thread': db_object.get('thread'),
             'author': db_object.get('author'),
-            'pathArray': db_object.get('patharray'),
+            'pathArray': db_object.get('pathArray'.lower()),
         }
 
 

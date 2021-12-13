@@ -133,14 +133,14 @@ def validate_json(*fields: Dict):
                     name = field_dict.get('name')
                     value_to_validate = val.get(name)
                     is_valid = _validate_field(field_dict, value_to_validate)
-    
+
                     if not is_valid:
                         text = await request.text()
                         app_logger.info('JSON validating failure for {} got {}'.format(
                             request.rel_url,
                             text,
                         ))
-    
+
                         return web.json_response(
                             data={'message': 'wrong request body format in field "{}"'.format(name)},
                             status=web.HTTPUnprocessableEntity.status_code,

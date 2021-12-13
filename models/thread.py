@@ -2,6 +2,7 @@ from jinja2 import Template
 from models.base import BaseModel
 from models.helpers import (
     serialize_pg_timestamp,
+    make_kv_list,
 )
 
 
@@ -123,6 +124,40 @@ class ThreadModel(BaseModel):
             author=nickname,
             thread_id=thread_id,
             vote=vote,
+        )
+
+        return self.db_socket.execute_query(query)
+
+    def modify_thread(self, thread_id, thread_slug, message, title, created):
+        fields = make_kv_list(
+            message=message,
+            title=title,
+            created=created,
+        )
+
+        query = Template('''
+            UPDATE threads SET
+
+            {% for i, field in fields %}
+              {{ field.key }} = '{{ field.value }}'
+              {% if fields_len > 1 and i < fields_len - 1 %},{% endif %}
+            {% endfor %}
+
+            WHERE
+            {% if thread_id_is_valid %}
+              id = {{ thread_id }}
+            {% else %}
+              slug = '{{ thread_slug }}'
+            {% endif %}
+
+            RETURNING id, message, author, created,
+            forum, slug, title, votes;
+        ''').render(
+            thread_id=thread_id,
+            thread_id_is_valid=thread_id is not None,
+            thread_slug=thread_slug,
+            fields=enumerate(fields),
+            fields_len=len(fields),
         )
 
         return self.db_socket.execute_query(query)

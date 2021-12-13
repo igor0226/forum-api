@@ -324,3 +324,89 @@ async def get_thread_details(request: web.Request):
         data=thread_model.serialize(found_threads[0]),
         status=web.HTTPOk.status_code,
     )
+
+
+@add_logging
+@validate_route_param(
+    name='slug_or_id',
+    validator=some(
+        is_non_digit,
+        is_non_negative,
+    ),
+)
+@validate_json(
+    # field(
+    #     name='forum',
+    #     required=False,
+    #     field_type=str,
+    #     validator=not_null_str,
+    # ),
+    field(
+        name='message',
+        required=False,
+        field_type=str,
+        validator=not_null_str,
+    ),
+    field(
+        name='title',
+        required=True,
+        field_type=str,
+        validator=not_null_str,
+    ),
+    # field(
+    #     name='author',
+    #     required=True,
+    #     field_type=str,
+    #     validator=is_nickname,
+    # ),
+    field(
+        name='created',
+        required=False,
+        field_type=str,
+        validator=is_timestamp,
+    ),
+)
+async def modify_thread(request: web.Request):
+    thread_slug_or_id = request.match_info['slug_or_id']
+    thread_id = int(thread_slug_or_id) if is_digit(thread_slug_or_id) else None
+    thread_updates = await request.json()
+    message = thread_updates.get('message')
+    title = thread_updates.get('title')
+    created = thread_updates.get('created')
+    is_empty_update = not message and not title and not created
+
+    found_threads, error = await thread_model.get_thread(
+        slug=thread_slug_or_id,
+        thread_id=thread_id,
+    )
+
+    if error:
+        return response_with_error()
+
+    if not found_threads or not len(found_threads):
+        return web.json_response(
+            data={'message': 'thread not found'},
+            status=web.HTTPNotFound.status_code,
+        )
+
+    if is_empty_update:
+        return web.json_response(
+            data=thread_model.serialize(found_threads[0]),
+            status=web.HTTPOk.status_code,
+        )
+
+    updated_posts, error = await thread_model.modify_thread(
+        thread_slug=thread_slug_or_id,
+        thread_id=thread_id,
+        message=message,
+        title=title,
+        created=created,
+    )
+
+    if error:
+        return response_with_error()
+
+    return web.json_response(
+        status=web.HTTPOk.status_code,
+        data=thread_model.serialize(updated_posts[0]),
+    )

@@ -9,7 +9,7 @@ class AppLogger:
     __dates_map = dict()
 
     def __init__(self):
-        # ensure log directory exists
+        # ensure that log directory exists
         log_dir = os.path.join(
             pathlib.Path(__file__).parent.resolve(),
             'log',

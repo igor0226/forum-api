@@ -49,7 +49,6 @@ CREATE TABLE posts
   isEdited BOOLEAN DEFAULT FALSE,
   message TEXT NOT NULL,
   parent BIGINT,
-  innerRootPost BIGINT,
   forum CITEXT,
   thread BIGINT,
   pathArray BIGINT[],
@@ -138,10 +137,7 @@ $$
         END IF;
 
         IF parent_post_path_array IS NULL THEN
-            NEW.innerRootPost = NEW.id;
             new_post_path_array := ARRAY[NEW.id]::BIGINT[];
-        ELSE
-            NEW.innerRootPost = NEW.parent;
         END IF;
 
         NEW.pathArray = new_post_path_array;
