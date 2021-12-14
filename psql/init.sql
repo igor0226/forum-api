@@ -90,7 +90,7 @@ CREATE FUNCTION
         WHERE posts.id IS NULL;
 
         DROP TABLE temp_posts;
-      END;
+      END
   $$ LANGUAGE plpgsql;
 
 CREATE FUNCTION update_thread_votes_counter() RETURNS TRIGGER AS
@@ -149,3 +149,69 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER t_path
 BEFORE INSERT ON posts
 FOR EACH ROW EXECUTE PROCEDURE create_post_path();
+
+CREATE FUNCTION update_forum_threads_counter() RETURNS TRIGGER AS
+$$
+    BEGIN
+        UPDATE forums
+        SET threads = threads + 1
+        WHERE slug = NEW.forum;
+
+        RETURN NEW;
+    END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER t_threads_counter
+AFTER INSERT ON threads
+FOR EACH ROW EXECUTE PROCEDURE update_forum_threads_counter();
+
+CREATE FUNCTION update_forum_posts_counter() RETURNS TRIGGER AS
+$$
+    BEGIN
+        UPDATE forums
+        SET posts = posts + 1
+        WHERE slug = NEW.forum;
+
+        RETURN NEW;
+    END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER t_posts_counter
+AFTER INSERT ON posts
+FOR EACH ROW EXECUTE PROCEDURE update_forum_posts_counter();
+
+CREATE FUNCTION get_all_forum_users(forum_slug CITEXT)
+    RETURNS SETOF users AS $$
+        BEGIN
+            CREATE TEMPORARY TABLE temp_threads_nicknames(
+                nickname CITEXT UNIQUE
+            );
+            CREATE TEMPORARY TABLE temp_posts_nicknames(
+                nickname CITEXT UNIQUE
+            );
+
+            INSERT INTO temp_threads_nicknames (nickname)
+            SELECT DISTINCT t.author
+            FROM threads AS t
+            WHERE t.forum = forum_slug;
+
+            INSERT INTO temp_posts_nicknames (nickname)
+            SELECT DISTINCT p.author
+            FROM posts AS p
+            WHERE p.forum = forum_slug;
+
+            RETURN QUERY
+            SELECT users.id, users.about, users.email, users.fullname, users.nickname
+            FROM (
+                SELECT t.nickname FROM
+                temp_threads_nicknames AS t
+                FULL JOIN temp_posts_nicknames AS p
+                ON t.nickname = p.nickname
+            ) AS temp_nicknames
+            LEFT JOIN users
+            ON temp_nicknames.nickname = users.nickname;
+
+            DROP TABLE temp_threads_nicknames;
+            DROP TABLE temp_posts_nicknames;
+          END
+    $$ LANGUAGE plpgsql;

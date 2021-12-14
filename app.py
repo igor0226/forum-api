@@ -1,6 +1,6 @@
 from aiohttp import web
 from handlers.user import create_user, get_user, modify_user
-from handlers.forum import create_forum, get_forum
+from handlers.forum import create_forum, get_forum, get_all_users
 from handlers.thread import create_thread, get_threads, make_thread_vote, get_thread_details, modify_thread
 from handlers.post import create_posts, get_thread_posts, get_post, modify_post
 from logger import app_logger
@@ -31,6 +31,7 @@ app.router.add_route('GET', '/api/forum/{slug}/details', get_forum)
 
 app.router.add_route('POST', '/api/forum/{slug}/create', create_thread)
 app.router.add_route('GET', '/api/forum/{slug}/threads', get_threads)
+app.router.add_route('GET', '/api/forum/{slug}/users', get_all_users)
 
 app.router.add_route('POST', '/api/thread/{slug_or_id}/vote', make_thread_vote)
 app.router.add_route('GET', '/api/thread/{slug_or_id}/details', get_thread_details)

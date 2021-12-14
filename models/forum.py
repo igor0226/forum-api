@@ -34,6 +34,14 @@ class ForumModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
+    def get_all_users(self, slug):
+        query = Template('''
+            SELECT nickname, fullname, about, email
+            FROM get_all_forum_users('{{ slug }}');
+        ''').render(slug=slug)
+
+        return self.db_socket.execute_query(query)
+
     @staticmethod
     def serialize(db_object):
         return {

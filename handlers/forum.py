@@ -122,3 +122,20 @@ async def get_forum(request: web.Request):
         data=response_body,
         status=web.HTTPOk.status_code,
     )
+
+
+@add_logging
+async def get_all_users(request: web.Request):
+    slug = request.match_info['slug']
+
+    found_users, error = await forum_model.get_all_users(slug=slug)
+
+    if error:
+        return response_with_error()
+
+    print(found_users)
+
+    return web.json_response(
+        status=web.HTTPOk.status_code,
+        data={},
+    )
