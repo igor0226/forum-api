@@ -14,7 +14,7 @@ CREATE TABLE users
   about TEXT,
   email CITEXT NOT NULL UNIQUE,
   fullname TEXT NOT NULL,
-  nickname CITEXT UNIQUE
+  nickname CITEXT COLLATE ucs_basic UNIQUE
 );
 
 CREATE TABLE forums
@@ -183,35 +183,29 @@ FOR EACH ROW EXECUTE PROCEDURE update_forum_posts_counter();
 CREATE FUNCTION get_all_forum_users(forum_slug CITEXT)
     RETURNS SETOF users AS $$
         BEGIN
-            CREATE TEMPORARY TABLE temp_threads_nicknames(
-                nickname CITEXT UNIQUE
-            );
-            CREATE TEMPORARY TABLE temp_posts_nicknames(
-                nickname CITEXT UNIQUE
+            CREATE TEMPORARY TABLE temp_nicknames(
+                nickname CITEXT
             );
 
-            INSERT INTO temp_threads_nicknames (nickname)
+            INSERT INTO temp_nicknames (nickname)
             SELECT DISTINCT t.author
             FROM threads AS t
             WHERE t.forum = forum_slug;
 
-            INSERT INTO temp_posts_nicknames (nickname)
+            INSERT INTO temp_nicknames (nickname)
             SELECT DISTINCT p.author
             FROM posts AS p
             WHERE p.forum = forum_slug;
 
             RETURN QUERY
             SELECT users.id, users.about, users.email, users.fullname, users.nickname
-            FROM (
-                SELECT t.nickname FROM
-                temp_threads_nicknames AS t
-                FULL JOIN temp_posts_nicknames AS p
-                ON t.nickname = p.nickname
-            ) AS temp_nicknames
-            LEFT JOIN users
-            ON temp_nicknames.nickname = users.nickname;
+            FROM users
+            INNER JOIN (
+                SELECT DISTINCT t.nickname FROM
+                temp_nicknames AS t
+            ) AS unique_nicknames
+            ON users.nickname = unique_nicknames.nickname;
 
-            DROP TABLE temp_threads_nicknames;
-            DROP TABLE temp_posts_nicknames;
+            DROP TABLE temp_nicknames;
           END
     $$ LANGUAGE plpgsql;

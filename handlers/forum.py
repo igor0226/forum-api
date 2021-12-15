@@ -4,6 +4,7 @@ from models.user import user_model
 from handlers.helpers import (
     field,
     validate_route_param,
+    validate_query_params,
     validate_json,
     response_with_error,
     add_logging,
@@ -12,6 +13,8 @@ from handlers.validators import (
     is_non_negative,
     is_nickname,
     is_non_digit,
+    is_bool_str,
+    not_null_str,
 )
 
 
@@ -125,17 +128,57 @@ async def get_forum(request: web.Request):
 
 
 @add_logging
+@validate_route_param(
+    name='slug',
+    validator=is_non_digit,
+)
+@validate_query_params(
+    field(
+        name='limit',
+        required=False,
+        validator=is_non_negative,
+    ),
+    field(
+        name='desc',
+        required=False,
+        validator=is_bool_str,
+    ),
+    field(
+        name='since',
+        required=False,
+        validator=not_null_str,
+    ),
+)
 async def get_all_users(request: web.Request):
     slug = request.match_info['slug']
+    limit = request.query.get('limit')
+    since = request.query.get('since')
+    desc = request.query.get('desc') == 'true'
 
-    found_users, error = await forum_model.get_all_users(slug=slug)
+    found_forums, error = await forum_model.get_forum(slug=slug)
 
     if error:
         return response_with_error()
 
-    print(found_users)
+    if not found_forums or not len(found_forums):
+        return web.json_response(
+            status=web.HTTPNotFound.status_code,
+            data={'message': 'forum not found'}
+        )
+
+    found_users, error = await forum_model.get_all_users(
+        slug=slug,
+        limit=limit,
+        since=since,
+        desc=desc,
+    )
+
+    if error:
+        return response_with_error()
+
+    users_list = list(map(lambda user: user_model.serialize(user), found_users))
 
     return web.json_response(
         status=web.HTTPOk.status_code,
-        data={},
+        data=users_list,
     )

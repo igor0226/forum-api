@@ -34,11 +34,27 @@ class ForumModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
-    def get_all_users(self, slug):
+    def get_all_users(self, slug, desc, since, limit):
         query = Template('''
             SELECT nickname, fullname, about, email
-            FROM get_all_forum_users('{{ slug }}');
-        ''').render(slug=slug)
+            FROM get_all_forum_users('{{ slug }}')
+
+            {% if has_since %}
+                WHERE nickname {{ operator }} '{{ since }}'
+            {% endif %}
+
+            ORDER BY nickname {% if desc %} DESC {% endif %}
+
+            {% if has_limit %} LIMIT {{ limit }} {% endif %};
+        ''').render(
+            slug=slug,
+            desc=desc,
+            has_since=since is not None,
+            since=since,
+            has_limit=limit is not None,
+            limit=limit,
+            operator='<' if desc else '>',
+        )
 
         return self.db_socket.execute_query(query)
 
