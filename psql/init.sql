@@ -70,7 +70,7 @@ CREATE TABLE thread_votes
 );
 
 CREATE FUNCTION
-  get_non_existing_posts(post_ids BIGINT[])
+  get_non_existing_posts(parent_post_ids BIGINT[], thread_id BIGINT)
   RETURNS TABLE(id BIGINT) AS $$
       DECLARE
         i INTEGER;
@@ -209,3 +209,18 @@ CREATE FUNCTION get_all_forum_users(forum_slug CITEXT)
             DROP TABLE temp_nicknames;
           END
     $$ LANGUAGE plpgsql;
+
+CREATE FUNCTION handle_post_is_edited() RETURNS TRIGGER AS
+$$
+    BEGIN
+        IF NEW.message != OLD.message THEN
+            NEW.isEdited = TRUE;
+        END IF;
+
+        RETURN NEW;
+    END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER t_posts_is_edited
+BEFORE UPDATE ON posts
+FOR EACH ROW EXECUTE PROCEDURE handle_post_is_edited();

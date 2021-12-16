@@ -129,6 +129,10 @@ async def create_posts(request: web.Request):
             status=web.HTTPNotFound.status_code,
         )
 
+    # curr_post_thread = None
+    # for post in posts:
+    #     post_thread_id =
+
     thread_id = found_threads[0].get('id')
     post_forum = found_threads[0].get('forum')
     created_posts, error = await post_model.create_posts(
@@ -285,7 +289,7 @@ async def get_post(request: web.Request):
 
     return web.json_response(
         status=web.HTTPOk.status_code,
-        data=post_model.serialize(found_posts[0])
+        data={'post': post_model.serialize(found_posts[0])}
     )
 
 
@@ -339,7 +343,7 @@ async def modify_post(request: web.Request):
     message = post_update.get('message')
     is_empty_update = not created and not message
 
-    found_posts, error = await post_model.get_post(id=post_id)
+    found_posts, error = await post_model.get_post(post_id=post_id)
 
     if error:
         return response_with_error()

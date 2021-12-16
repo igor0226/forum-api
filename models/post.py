@@ -4,6 +4,7 @@ from models.helpers import (
     get_pg_timestamp,
     serialize_pg_timestamp,
     get_first_defined,
+    make_kv_list,
 )
 
 
@@ -160,24 +161,26 @@ class PostModel(BaseModel):
         return self.db_socket.execute_query(query)
 
     def modify_post(self, post_id, message, created):
+        fields = make_kv_list(
+            message=message,
+            created=created,
+        )
+
         query = Template('''
             UPDATE posts SET
     
-            {% if message %}
-                message = '{{ message }}'
-            {% endif %}
-
-            {% if created %}
-                created = '{{ created }}'
-            {% endif %}
+            {% for i, field in fields %}
+                {{ field.key }} = '{{ field.value }}'
+                {% if fields_len > 1 and i < fields_len - 1 %},{% endif %}
+            {% endfor %}
 
             WHERE id = {{ post_id }}
             RETURNING id, created, isEdited, message,
             parent, forum, thread, author;
         ''').render(
             post_id=post_id,
-            message=message,
-            created=created,
+            fields=enumerate(fields),
+            fields_len=len(fields),
         )
 
         return self.db_socket.execute_query(query)
@@ -195,7 +198,6 @@ class PostModel(BaseModel):
             'forum': db_object.get('forum'),
             'thread': db_object.get('thread'),
             'author': db_object.get('author'),
-            'pathArray': db_object.get('pathArray'.lower()),
         }
 
 
