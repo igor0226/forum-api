@@ -69,30 +69,6 @@ CREATE TABLE thread_votes
     FOREIGN KEY (thread) REFERENCES threads(id)
 );
 
-CREATE FUNCTION
-  get_non_existing_posts(parent_post_ids BIGINT[], thread_id BIGINT)
-  RETURNS TABLE(id BIGINT) AS $$
-      DECLARE
-        i INTEGER;
-      BEGIN
-        CREATE TEMPORARY TABLE temp_posts(
-          id BIGINT
-        );
-
-        FOREACH i IN ARRAY post_ids LOOP
-          INSERT INTO temp_posts (id) values(i);
-        END LOOP;
-
-        RETURN QUERY SELECT temp_posts.id FROM
-        temp_posts
-        LEFT JOIN posts
-        ON temp_posts.id = posts.id
-        WHERE posts.id IS NULL;
-
-        DROP TABLE temp_posts;
-      END
-  $$ LANGUAGE plpgsql;
-
 CREATE FUNCTION update_thread_votes_counter() RETURNS TRIGGER AS
 $$
     DECLARE
@@ -224,3 +200,33 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER t_posts_is_edited
 BEFORE UPDATE ON posts
 FOR EACH ROW EXECUTE PROCEDURE handle_post_is_edited();
+
+CREATE FUNCTION check_posts_root(parent_post_ids BIGINT[], thread_id BIGINT)
+RETURNS BOOLEAN AS
+$$
+    DECLARE
+        i INTEGER;
+        found_posts_len INTEGER;
+    BEGIN
+        DROP TABLE IF EXISTS temp_distinct_ids;
+        CREATE TEMPORARY TABLE temp_distinct_ids (
+            post_id BIGINT
+        );
+
+        FOREACH i IN ARRAY parent_post_ids LOOP
+            INSERT INTO temp_distinct_ids (post_id) values(i);
+        END LOOP;
+
+        SELECT COUNT(posts.id)
+        INTO found_posts_len
+        FROM posts JOIN temp_distinct_ids
+        ON posts.id = temp_distinct_ids.post_id
+        WHERE posts.thread = thread_id;
+
+        IF found_posts_len != array_length(parent_post_ids, 1) THEN
+            RETURN FALSE;
+        END IF;
+
+        RETURN TRUE;
+    END
+$$ LANGUAGE plpgsql;

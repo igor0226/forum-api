@@ -6,7 +6,6 @@ from handlers.helpers import (
     validate_route_param,
     validate_query_params,
     response_with_error,
-    dict_from_list,
 )
 from handlers.validators import (
     some,
@@ -89,30 +88,6 @@ async def create_posts(request: web.Request):
             status=web.HTTPCreated.status_code,
         )
 
-    parent_post_ids = dict_from_list(
-        values_list=posts,
-        key='parent',
-    )
-    post_ids = dict_from_list(
-        values_list=posts,
-        key='id',
-    )
-    not_found_post_ids, error = await post_model.get_non_existing_posts(
-        post_ids=parent_post_ids,
-    )
-
-    if error:
-        return response_with_error()
-
-    not_found_post_ids = set(not_found_post_ids)
-    post_ids = set(post_ids)
-    for not_found_post_id in not_found_post_ids:
-        if not not_found_post_id not in post_ids:
-            return web.json_response(
-                data={'message': 'parent post not found'},
-                status=web.HTTPConflict.status_code,
-            )
-
     thread_slug_or_id = request.match_info['slug_or_id']
     thread_id = int(thread_slug_or_id) if is_digit(thread_slug_or_id) else None
     found_threads, error = await thread_model.get_thread(
@@ -129,11 +104,25 @@ async def create_posts(request: web.Request):
             status=web.HTTPNotFound.status_code,
         )
 
-    # curr_post_thread = None
-    # for post in posts:
-    #     post_thread_id =
-
     thread_id = found_threads[0].get('id')
+    parent_post_ids = set(map(lambda p: p.get('parent'), posts))
+    post_ids = set(map(lambda p: p.get('id'), posts))
+    existing_parent_posts_ids = list(set(parent_post_ids) - set(post_ids))
+    flags, error = await post_model.check_posts_to_create(
+        parent_post_ids=existing_parent_posts_ids,
+        thread_id=thread_id,
+    )
+
+    if error:
+        return response_with_error()
+
+    is_valid = flags[0].get('check_posts_root')
+    if not is_valid:
+        return web.json_response(
+            status=web.HTTPConflict.status_code,
+            data={'message': 'check posts parent ids'}
+        )
+
     post_forum = found_threads[0].get('forum')
     created_posts, error = await post_model.create_posts(
         posts=posts,

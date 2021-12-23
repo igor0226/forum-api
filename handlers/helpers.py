@@ -151,14 +151,3 @@ def validate_json(*fields: Dict):
         return inner
 
     return wrapper
-
-
-def dict_from_list(values_list, key):
-    def unique_appender(values_dict, value):
-        got_by_key = value.get(key)
-        if got_by_key and got_by_key not in values_dict:
-            values_dict[got_by_key] = True
-
-        return values_dict
-
-    return reduce(unique_appender, values_list, dict())

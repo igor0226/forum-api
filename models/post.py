@@ -19,19 +19,21 @@ class PostModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
-    def get_non_existing_posts(self, post_ids):
+    def check_posts_to_create(self, parent_post_ids, thread_id):
         query = Template('''
-                    SELECT id FROM get_non_existing_posts(
-                      ARRAY[
-                          {% for i, post_id in post_ids %}
-                            {{ post_id }}
-                            {% if posts_len > 1 and i < posts_len - 1 %},{% endif %}
-                          {% endfor %}
-                      ]::integer[]
-                    );
-                ''').render(
-            post_ids=enumerate(post_ids),
-            posts_len=len(post_ids),
+            SELECT check_posts_root(
+                ARRAY[
+                  {% for i, post_id in parent_post_ids %}
+                    {{ post_id }}
+                    {% if ids_len > 1 and i < ids_len - 1 %},{% endif %}
+                  {% endfor %}
+                ]::integer[],
+                '{{ thread_id }}'
+            );
+        ''').render(
+            parent_post_ids=enumerate(parent_post_ids),
+            ids_len=len(parent_post_ids),
+            thread_id=thread_id,
         )
 
         return self.db_socket.execute_query(query)

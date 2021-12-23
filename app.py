@@ -7,6 +7,7 @@ from logger import app_logger
 
 
 # TODO use fetchVal/fetchRow where it is possible
+# TODO DROP TEMP TABLE IF EXISTS IN THE BEGINNING OF THE FUNCTION
 # TODO: close db socket before exiting app
 # TODO: git hooks
 # TODO: more smart templates for SQL
