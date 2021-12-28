@@ -20,6 +20,7 @@ from handlers.validators import (
 )
 from models.post import post_model
 from models.thread import thread_model
+from models.user import user_model
 
 
 @add_logging
@@ -82,12 +83,6 @@ from models.thread import thread_model
 )
 async def create_posts(request: web.Request):
     posts = await request.json()
-    if not len(posts):
-        return web.json_response(
-            data=[],
-            status=web.HTTPCreated.status_code,
-        )
-
     thread_slug_or_id = request.match_info['slug_or_id']
     thread_id = int(thread_slug_or_id) if is_digit(thread_slug_or_id) else None
     found_threads, error = await thread_model.get_thread(
@@ -104,6 +99,21 @@ async def create_posts(request: web.Request):
             status=web.HTTPNotFound.status_code,
         )
 
+    posts_authors = set(map(lambda p: p.get('author'), posts))
+    flags, error = await user_model.check_users_nicknames(
+        nicknames=posts_authors,
+    )
+
+    if error:
+        return response_with_error()
+
+    authors_exists = flags[0].get('authors_exists')
+    if not authors_exists:
+        return web.json_response(
+            status=web.HTTPNotFound.status_code,
+            data={'message': 'check posts authors'}
+        )
+
     thread_id = found_threads[0].get('id')
     parent_post_ids = set(map(lambda p: p.get('parent'), posts))
     post_ids = set(map(lambda p: p.get('id'), posts))
@@ -116,11 +126,17 @@ async def create_posts(request: web.Request):
     if error:
         return response_with_error()
 
-    is_valid = flags[0].get('check_posts_root')
+    is_valid = flags[0].get('posts_are_valid')
     if not is_valid:
         return web.json_response(
             status=web.HTTPConflict.status_code,
             data={'message': 'check posts parent ids'}
+        )
+
+    if not len(posts):
+        return web.json_response(
+            data=[],
+            status=web.HTTPCreated.status_code,
         )
 
     post_forum = found_threads[0].get('forum')
@@ -288,42 +304,18 @@ async def get_post(request: web.Request):
     validator=is_non_negative
 )
 @validate_json(
-    # field(
-    #     name='author',
-    #     required=False,
-    #     field_type=str,
-    #     validator=is_nickname,
-    # ),
     field(
         name='created',
         required=False,
         field_type=str,
         validator=is_timestamp,
     ),
-    # field(
-    #     name='forum',
-    #     required=False,
-    #     field_type=str,
-    #     validator=is_non_digit,
-    # ),
     field(
         name='message',
         required=False,
         field_type=str,
         validator=not_null_str,
     ),
-    # field(
-    #     name='parent',
-    #     required=False,
-    #     field_type=int,
-    #     validator=is_non_negative,
-    # ),
-    # field(
-    #     name='thread',
-    #     required=False,
-    #     field_type=int,
-    #     validator=is_non_negative,
-    # ),
 )
 async def modify_post(request: web.Request):
     post_id = request.match_info['id']

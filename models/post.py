@@ -29,7 +29,7 @@ class PostModel(BaseModel):
                   {% endfor %}
                 ]::integer[],
                 '{{ thread_id }}'
-            );
+            ) AS posts_are_valid;
         ''').render(
             parent_post_ids=enumerate(parent_post_ids),
             ids_len=len(parent_post_ids),

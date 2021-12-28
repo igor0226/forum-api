@@ -70,6 +70,21 @@ class UserModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
+    def check_users_nicknames(self, nicknames):
+        query = Template('''
+            SELECT check_users_nicknames(ARRAY[
+                {% for i, nickname in nicknames %}
+                    '{{ nickname }}'
+                    {% if nicknames_len > 1 and i < nicknames_len - 1 %},{% endif %}
+                {% endfor %}
+            ]::CITEXT[]) AS authors_exists;
+        ''').render(
+            nicknames=enumerate(nicknames),
+            nicknames_len=len(nicknames),
+        )
+
+        return self.db_socket.execute_query(query)
+
     @staticmethod
     def serialize(db_object):
         return {
