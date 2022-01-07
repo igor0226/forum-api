@@ -3,7 +3,7 @@ from handlers.user import create_user, get_user, modify_user
 from handlers.forum import create_forum, get_forum, get_all_users
 from handlers.thread import create_thread, get_threads, make_thread_vote, get_thread_details, modify_thread
 from handlers.post import create_posts, get_thread_posts, get_post, modify_post
-from handlers.service import get_all_tables_count
+from handlers.service import get_all_tables_count, clear_all_tables
 from logger import app_logger
 
 
@@ -45,6 +45,7 @@ app.router.add_route('GET', '/api/post/{id}/details', get_post)
 app.router.add_route('POST', '/api/post/{id}/details', modify_post)
 
 app.router.add_route('GET', '/api/service/status', get_all_tables_count)
+app.router.add_route('POST', '/api/service/clear', clear_all_tables)
 
 app_logger.info('app started')
 web.run_app(app, port=5000)

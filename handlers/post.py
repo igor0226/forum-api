@@ -17,6 +17,7 @@ from handlers.validators import (
     is_non_negative,
     is_bool_str,
     one_of,
+    is_string_enum,
 )
 from models.post import post_model
 from models.thread import thread_model
@@ -279,8 +280,16 @@ async def get_thread_posts(request: web.Request):
     name='id',
     validator=is_non_negative
 )
+@validate_query_params(
+    field(
+        name='related',
+        required=False,
+        validator=is_string_enum('user')
+    ),
+)
 async def get_post(request: web.Request):
     post_id = request.match_info['id']
+    related_fields = request.query.get('related')
     found_posts, error = await post_model.get_post(post_id)
 
     if error:

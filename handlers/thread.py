@@ -255,6 +255,17 @@ async def make_thread_vote(request: web.Request):
             status=web.HTTPNotFound.status_code,
         )
 
+    found_users, error = await user_model.get_users(nickname=nickname)
+
+    if error:
+        return response_with_error()
+
+    if not found_users or not len(found_users):
+        return web.json_response(
+            data={'message': 'user not found'},
+            status=web.HTTPNotFound.status_code,
+        )
+
     thread_to_update = found_threads[0]
     found_votes, error = await thread_model.get_vote(
         author=nickname,
@@ -335,12 +346,6 @@ async def get_thread_details(request: web.Request):
     ),
 )
 @validate_json(
-    # field(
-    #     name='forum',
-    #     required=False,
-    #     field_type=str,
-    #     validator=not_null_str,
-    # ),
     field(
         name='message',
         required=False,
@@ -349,16 +354,10 @@ async def get_thread_details(request: web.Request):
     ),
     field(
         name='title',
-        required=True,
+        required=False,
         field_type=str,
         validator=not_null_str,
     ),
-    # field(
-    #     name='author',
-    #     required=True,
-    #     field_type=str,
-    #     validator=is_nickname,
-    # ),
     field(
         name='created',
         required=False,

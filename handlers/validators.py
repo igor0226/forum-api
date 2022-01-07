@@ -70,3 +70,14 @@ def one_of(*legal_values: str):
         return False
 
     return inner
+
+
+def is_string_enum(*legal_values: str):
+    def inner(val):
+        for s in val.split(','):
+            if s not in legal_values:
+                return False
+
+        return True
+
+    return inner
