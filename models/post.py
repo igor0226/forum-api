@@ -187,6 +187,42 @@ class PostModel(BaseModel):
 
         return self.db_socket.execute_query(query)
 
+    def get_related_info(self, post_id):
+        query = Template('''
+            SELECT
+                post_created,
+                post_isEdited,
+                post_message,
+                post_parent,
+                post_forum,
+                post_thread,
+                post_author,
+    
+                author_about,
+                author_email,
+                author_fullname,
+                author_nickname,
+    
+                forum_posts,
+                forum_slug,
+                forum_threads,
+                forum_title,
+                forum_author,
+    
+                thread_author,
+                thread_created,
+                thread_forum,
+                thread_message,
+                thread_slug,
+                thread_title,
+                thread_votes
+            FROM get_post_related_info('{{ post_id }}');
+        ''').render(
+            post_id=post_id,
+        )
+
+        return self.db_socket.execute_query(query)
+
     @staticmethod
     def serialize(db_object):
         return {
@@ -201,6 +237,64 @@ class PostModel(BaseModel):
             'thread': db_object.get('thread'),
             'author': db_object.get('author'),
         }
+
+    @staticmethod
+    def serialize_related_info(db_object, author=False, forum=False, thread=False):
+        result = {
+            'post': {
+                'id': db_object.get('post_id'),
+                'created': serialize_pg_timestamp(
+                    timestamp=db_object.get('post_created'),
+                ),
+                'isEdited': db_object.get('post_isEdited'.lower()),
+                'message': db_object.get('post_message'),
+                'parent': db_object.get('post_parent'),
+                'forum': db_object.get('post_forum'),
+                'thread': db_object.get('post_thread'),
+                'author': db_object.get('post_author'),
+            },
+        }
+
+        if author:
+            result = {
+                **result,
+                'author': {
+                    'about': db_object.get('author_about'),
+                    'email': db_object.get('author_email'),
+                    'fullname': db_object.get('author_fullname'),
+                    'nickname': db_object.get('author_nickname'),
+                }
+            }
+
+        if forum:
+            result = {
+                **result,
+                'forum': {
+                    'posts': db_object.get('forum_posts'),
+                    'slug': db_object.get('forum_slug'),
+                    'threads': db_object.get('forum_threads'),
+                    'title': db_object.get('forum_title'),
+                    'user': db_object.get('forum_author'),
+                }
+            }
+
+        if thread:
+            result = {
+                **result,
+                'thread': {
+                    'author': db_object.get('thread_author'),
+                    'created': serialize_pg_timestamp(
+                        timestamp=db_object.get('thread_created'),
+                    ),
+                    'forum': db_object.get('thread_forum'),
+                    'message': db_object.get('thread_message'),
+                    'slug': db_object.get('thread_slug'),
+                    'title': db_object.get('thread_title'),
+                    'votes': db_object.get('thread_votes'),
+                }
+            }
+
+        return result
 
 
 post_model = PostModel()

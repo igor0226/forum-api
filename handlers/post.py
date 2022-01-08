@@ -289,8 +289,8 @@ async def get_thread_posts(request: web.Request):
 )
 async def get_post(request: web.Request):
     post_id = request.match_info['id']
-    related_fields = request.query.get('related')
-    found_posts, error = await post_model.get_post(post_id)
+    related_fields = request.query.get('related', '')
+    found_posts, error = await post_model.get_related_info(post_id)
 
     if error:
         return response_with_error()
@@ -303,7 +303,12 @@ async def get_post(request: web.Request):
 
     return web.json_response(
         status=web.HTTPOk.status_code,
-        data={'post': post_model.serialize(found_posts[0])}
+        data=post_model.serialize_related_info(
+            db_object=found_posts[0],
+            author='user' in related_fields,
+            forum='forum' in related_fields,
+            thread='thread' in related_fields,
+        )
     )
 
 
