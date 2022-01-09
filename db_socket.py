@@ -3,11 +3,11 @@ import asyncpg
 
 class DbSocket:
     def __init__(self):
-        self.__db_socket = None
+        self.__connection_pool = None
         self.__connected = False
 
     async def connect(self):
-        self.__db_socket = await asyncpg.connect(
+        self.__connection_pool = await asyncpg.create_pool(
             user='igor',
             password='password',
             database='app',
@@ -15,10 +15,6 @@ class DbSocket:
             port='5432',
         )
         self.__connected = True
-
-    async def close(self):
-        await self.__db_socket.close()
-        self.__connected = False
 
     async def execute_query(self, query):
         try:
@@ -29,7 +25,8 @@ class DbSocket:
             return None, True
 
         try:
-            result = await self.__db_socket.fetch(query)
+            async with self.__connection_pool.acquire() as connection:
+                result = await connection.fetch(query)
         except asyncpg.PostgresError:
             # TODO log 'EXEC QUERY ERROR' type(e), e, query
             return None, True
