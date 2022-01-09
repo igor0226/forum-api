@@ -10,7 +10,6 @@ from logger import app_logger
 # TODO use fetchVal/fetchRow where it is possible
 # TODO: close db socket before exiting app
 # TODO: git hooks
-# TODO: more smart templates for SQL
 # TODO: run flake8 and fix all errors
 # TODO: make yaml config
 # TODO: check SQL injections

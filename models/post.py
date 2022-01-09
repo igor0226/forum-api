@@ -190,6 +190,7 @@ class PostModel(BaseModel):
     def get_related_info(self, post_id):
         query = Template('''
             SELECT
+                post_id,
                 post_created,
                 post_isEdited,
                 post_message,
@@ -203,12 +204,14 @@ class PostModel(BaseModel):
                 author_fullname,
                 author_nickname,
     
+                forum_id,
                 forum_posts,
                 forum_slug,
                 forum_threads,
                 forum_title,
                 forum_author,
     
+                thread_id,
                 thread_author,
                 thread_created,
                 thread_forum,
@@ -270,6 +273,7 @@ class PostModel(BaseModel):
             result = {
                 **result,
                 'forum': {
+                    'id': db_object.get('forum_id'),
                     'posts': db_object.get('forum_posts'),
                     'slug': db_object.get('forum_slug'),
                     'threads': db_object.get('forum_threads'),
@@ -282,6 +286,7 @@ class PostModel(BaseModel):
             result = {
                 **result,
                 'thread': {
+                    'id': db_object.get('thread_id'),
                     'author': db_object.get('thread_author'),
                     'created': serialize_pg_timestamp(
                         timestamp=db_object.get('thread_created'),

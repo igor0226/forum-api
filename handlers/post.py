@@ -284,7 +284,7 @@ async def get_thread_posts(request: web.Request):
     field(
         name='related',
         required=False,
-        validator=is_string_enum('user')
+        validator=is_string_enum('user', 'thread', 'forum')
     ),
 )
 async def get_post(request: web.Request):
@@ -352,7 +352,7 @@ async def modify_post(request: web.Request):
     if is_empty_update:
         return web.json_response(
             status=web.HTTPOk.status_code,
-            data=found_posts[0],
+            data=post_model.serialize(found_posts[0]),
         )
 
     updated_posts, error = await post_model.modify_post(

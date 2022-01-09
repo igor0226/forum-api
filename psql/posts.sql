@@ -91,17 +91,6 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION get_post_related_info(post_id_to_find BIGINT)
 RETURNS TABLE(
-    author_about TEXT,
-    author_email CITEXT,
-    author_fullname TEXT,
-    author_nickname CITEXT,
-
-    forum_posts BIGINT,
-    forum_slug CITEXT,
-    forum_threads BIGINT,
-    forum_title TEXT,
-    forum_author CITEXT,
-
     post_id BIGINT,
     post_created TIMESTAMP WITH TIME ZONE,
     post_isEdited BOOLEAN,
@@ -111,6 +100,19 @@ RETURNS TABLE(
     post_thread BIGINT,
     post_author CITEXT,
 
+    author_about TEXT,
+    author_email CITEXT,
+    author_fullname TEXT,
+    author_nickname CITEXT,
+
+    forum_id BIGINT,
+    forum_posts BIGINT,
+    forum_slug CITEXT,
+    forum_threads BIGINT,
+    forum_title TEXT,
+    forum_author CITEXT,
+
+    thread_id BIGINT,
     thread_author CITEXT,
     thread_created TIMESTAMP WITH TIME ZONE,
     thread_forum CITEXT,
@@ -122,69 +124,39 @@ RETURNS TABLE(
 $$
     BEGIN
         RETURN QUERY SELECT
-            found_posts.author_about,
-            found_posts.author_email,
-            found_posts.author_fullname,
-            found_posts.author_nickname,
+            posts.id AS post_id,
+            posts.created AS post_created,
+            posts.isEdited AS post_isEdited,
+            posts.message AS post_message,
+            posts.parent AS post_parent,
+            posts.forum AS post_forum,
+            posts.thread AS post_thread,
+            posts.author AS post_author,
 
-            found_posts.forum_posts,
-            found_posts.forum_slug,
-            found_posts.forum_threads,
-            found_posts.forum_title,
-            found_posts.forum_author,
+            users.about AS author_about,
+            users.email AS author_email,
+            users.fullname AS author_fullname,
+            users.nickname AS author_nickname,
 
-            found_posts.post_id,
-            found_posts.post_created,
-            found_posts.post_isEdited,
-            found_posts.post_message,
-            found_posts.post_parent,
-            found_posts.post_forum,
-            found_posts.post_thread,
-            found_posts.post_author,
+            forums.id AS forum_id,
+            forums.posts AS forum_posts,
+            forums.slug AS forum_slug,
+            forums.threads AS forum_threads,
+            forums.title AS forum_title,
+            forums.author AS forum_author,
 
-            found_posts.thread_author,
-            found_posts.thread_created,
-            found_posts.thread_forum,
-            found_posts.thread_message,
-            found_posts.thread_slug,
-            found_posts.thread_title,
-            found_posts.thread_votes
-        FROM (
-            SELECT
-                posts.id AS post_id,
-                posts.created AS post_created,
-                posts.isEdited AS post_isEdited,
-                posts.message AS post_message,
-                posts.parent AS post_parent,
-                posts.forum AS post_forum,
-                posts.thread AS post_thread,
-                posts.author AS post_author,
-
-                users.about AS author_about,
-                users.email AS author_email,
-                users.fullname AS author_fullname,
-                users.nickname AS author_nickname,
-
-                forums.posts AS forum_posts,
-                forums.slug AS forum_slug,
-                forums.threads AS forum_threads,
-                forums.title AS forum_title,
-                forums.author AS forum_author,
-
-                threads.author AS thread_author,
-                threads.created AS thread_created,
-                threads.forum AS thread_forum,
-                threads.message AS thread_message,
-                threads.slug AS thread_slug,
-                threads.title AS thread_title,
-                threads.votes AS thread_votes
-            FROM posts
-
-            JOIN users ON posts.author = users.nickname
-            JOIN forums ON posts.forum = forums.slug
-            JOIN threads ON posts.thread = threads.id
-
-            WHERE posts.id = post_id_to_find
-        ) AS found_posts;
+            threads.id AS thread_id,
+            threads.author AS thread_author,
+            threads.created AS thread_created,
+            threads.forum AS thread_forum,
+            threads.message AS thread_message,
+            threads.slug AS thread_slug,
+            threads.title AS thread_title,
+            threads.votes AS thread_votes
+        FROM posts
+        JOIN users ON posts.author = users.nickname
+        JOIN forums ON posts.forum = forums.slug
+        JOIN threads ON posts.thread = threads.id
+        WHERE posts.id = post_id_to_find;
     END
 $$ LANGUAGE plpgsql;
