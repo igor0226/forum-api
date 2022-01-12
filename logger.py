@@ -15,8 +15,7 @@ class AppLogger:
             'log',
         )
         log_inner_dir = os.path.join(
-            pathlib.Path(__file__).parent.resolve(),
-            'log',
+            log_dir,
             '1d',
         )
 

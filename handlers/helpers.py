@@ -1,9 +1,32 @@
-from typing import Dict, List
-from functools import reduce
+import re
+from typing import Dict
+from time import time
 from json import decoder
 from aiohttp import web
 from handlers.validators import default_validator
 from logger import app_logger
+from perf_logger import q
+
+api_param_reg_exp = re.compile('^/api/[^/]+/([^/]+)/[^/]+$')
+
+
+def _get_url_key(url, method):
+    prefix_index = url.find('/api')
+    cut_url = url[prefix_index::]
+    match = api_param_reg_exp.match(cut_url)
+
+    if match:
+        param = match.group(1)
+        param_beg_index = cut_url.find(param)
+        param_end_index = param_beg_index + len(param)
+        cut_url = cut_url[0:param_beg_index - 1:] + cut_url[param_end_index::]
+
+    query_separator = cut_url.find('?')
+
+    if query_separator != -1:
+        cut_url = cut_url[:query_separator - 1:]
+
+    return '{}:{}'.format(cut_url, method)
 
 
 def add_logging(handler):
@@ -15,7 +38,14 @@ def add_logging(handler):
             body,
         ))
 
-        return await handler(request)
+        beg_time = time()
+        response = await handler(request)
+        q.put((
+            _get_url_key(str(request.url), request.method),
+            time() - beg_time,
+        ))
+
+        return response
 
     return inner
 
