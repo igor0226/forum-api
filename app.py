@@ -54,6 +54,7 @@ perf_logging_thread = Thread(
     args=(q,),
 )
 perf_logging_thread.start()
+perf_logging_thread.join()
 # perf logging
 
 app_logger.info('app started')

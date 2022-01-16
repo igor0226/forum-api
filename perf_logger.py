@@ -25,6 +25,9 @@ class PerfLogger:
         if not os.path.exists(log_inner_dir):
             os.mkdir(log_inner_dir)
 
+        if not os.path.exists(self.log_file):
+            open(self.log_file, 'w')
+
     def write_duration(self, key, duration):
         with open(self.log_file, 'r+') as f:
             try:
