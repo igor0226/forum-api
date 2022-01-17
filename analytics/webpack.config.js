@@ -5,7 +5,7 @@ const autoprefixer = require('autoprefixer');
 const path = require('path');
 
 module.exports = {
-    entry: 'index.js',
+    entry: './app.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
     },
@@ -38,15 +38,17 @@ module.exports = {
                 },
             },
             {
-                test: /\.s?css$/,
+                test: /\.css$/,
                 use: [
-                    'style-loader',
-                    MiniCssExtractPlugin.loader,
-                    'css-loader',
+                    { loader: MiniCssExtractPlugin.loader },
+                    { loader: 'css-loader' },
+                    { loader: 'style-loader' },
                     {
                         loader: 'postcss-loader',
                         options: {
-                            plugins: () => [autoprefixer()],
+                            postcssOptions: {
+                                plugins: () => [autoprefixer()],
+                            },
                         },
                     },
                 ],
@@ -54,11 +56,12 @@ module.exports = {
         ]
     },
     plugins: [
+        new MiniCssExtractPlugin(),
         new VueLoaderPlugin(),
         new htmlWebpackPlugin({
-            template: path.resolve(__dirname, 'public', 'index.html'),
+            template: path.resolve(__dirname, 'index.html'),
             favicon: './assets/favicon.ico',
-          }),
+        }),
     ],
     resolve: {
         alias: {
