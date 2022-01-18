@@ -40,9 +40,9 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: [
-                    { loader: MiniCssExtractPlugin.loader },
-                    { loader: 'css-loader' },
+                    // { loader: MiniCssExtractPlugin.loader },
                     { loader: 'style-loader' },
+                    { loader: 'css-loader' },
                     {
                         loader: 'postcss-loader',
                         options: {
@@ -53,8 +53,8 @@ module.exports = {
                     },
                 ],
             },
+        },
         ]
-    },
     plugins: [
         new MiniCssExtractPlugin(),
         new VueLoaderPlugin(),
