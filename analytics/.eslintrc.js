@@ -1,26 +1,34 @@
-// eslint-disable-next-line
 module.exports = {
-    'env': {
-        'browser': true,
-        'node': true,
-        'es2021': true,
+    env: {
+        browser: true,
+        node: true,
+        es6: true,
+        commonjs: true,
     },
-    'extends': [
-        'eslint:recommended',
-        'plugin:vue/essential',
-        'plugin:@typescript-eslint/recommended',
+    extends: [
+        'airbnb',
+        'plugin:vue/base',
     ],
-    'parserOptions': {
-        'ecmaVersion': 'latest',
-        'parser': '@typescript-eslint/parser',
-        'sourceType': 'module',
+    parserOptions: {
+        parser: require('babel-eslint'),
+        ecmaVersion: 6,
     },
-    'plugins': [
-        'vue',
-        '@typescript-eslint',
+    plugins: [
+        'html',
     ],
-    'rules': {
-        '@typescript-eslint/no-var-requires': 'off',
-        'quotes': ['error', 'single'],
+    rules: {
+        quotes: ['error', 'single'],
+        indent: ['error', 4],
+        'global-require': 'off',
+        'vue/script-indent': ['error', 4, {
+            baseIndent: 1,
+        }],
+        'arrow-parens': ['error', 'as-needed'],
     },
+    overrides: [{
+        files: ['*.vue'],
+        rules: {
+            indent: 'off',
+        },
+    }],
 };

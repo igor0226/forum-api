@@ -53,8 +53,8 @@ module.exports = {
                     },
                 ],
             },
-        },
-        ]
+        ],
+    },
     plugins: [
         new MiniCssExtractPlugin(),
         new VueLoaderPlugin(),
