@@ -19,6 +19,11 @@
 
 <style>
     header .md-toolbar .md-title {
+        font-size: 26px;
         font-weight: bold;
+    }
+
+    header .md-toolbar .md-button-content {
+        font-size: 16px;
     }
 </style>

@@ -49,12 +49,12 @@ app.router.add_route('GET', '/api/service/status', get_all_tables_count)
 app.router.add_route('POST', '/api/service/clear', clear_all_tables)
 
 # perf logging
-perf_logging_thread = Thread(
-    target=perf_logger_worker,
-    args=(q,),
-)
-perf_logging_thread.start()
-perf_logging_thread.join()
+# perf_logging_thread = Thread(
+#     target=perf_logger_worker,
+#     args=(q,),
+# )
+# perf_logging_thread.start()
+# perf_logging_thread.join()
 # perf logging
 
 app_logger.info('app started')

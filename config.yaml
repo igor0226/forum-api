@@ -1,0 +1,11 @@
+db_settings:
+  user: 'igor'
+  password: 'password'
+  database: 'app'
+  host: '127.0.0.1'
+  port: '5432'
+
+endpoints:
+  create_forum:
+    method: 'POST'
+    path: '/api/forum/create'

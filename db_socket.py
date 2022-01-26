@@ -1,4 +1,5 @@
 import asyncpg
+from config import app_config
 
 
 class DbSocket:
@@ -8,11 +9,11 @@ class DbSocket:
 
     async def connect(self):
         self.__connection_pool = await asyncpg.create_pool(
-            user='igor',
-            password='password',
-            database='app',
-            host='127.0.0.1',
-            port='5432',
+            user=app_config['db_settings']['user'],
+            password=app_config['db_settings']['password'],
+            database=app_config['db_settings']['database'],
+            host=app_config['db_settings']['host'],
+            port=app_config['db_settings']['port'],
         )
         self.__connected = True
 

@@ -1,12 +1,12 @@
 import Router from 'vue-router';
-import Reports from './src/pages/Reports/Reports';
+import Reports from './src/pages/Reports/Reports.vue';
 
-export const router = new Router({
+export default new Router({
     routes: [
         {
             path: '/',
             name: 'reports',
             component: Reports,
-        }
+        },
     ],
 });
