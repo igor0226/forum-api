@@ -6,6 +6,60 @@ db_settings:
   port: '5432'
 
 endpoints:
+  create_user:
+    method: 'POST'
+    path: '/api/user/create'
+  get_user:
+    method: 'POST'
+    path: '/api/user/profile'
+  modify_user:
+    method: 'POST'
+    path: '/api/user/profile'
+
   create_forum:
     method: 'POST'
     path: '/api/forum/create'
+  get_forum:
+    method: 'GET'
+    path: '/api/forum/details'
+
+  create_thread:
+    method: 'POST'
+    path: '/api/forum/create'
+  get_threads:
+    method: 'GET'
+    path: '/api/forum/threads'
+  get_all_users:
+    method: 'GET'
+    path: '/api/forum/users'
+
+  make_thread_vote:
+    method: 'POST'
+    path: '/api/thread/vote'
+  get_thread_details:
+    method: 'GET'
+    path: '/api/thread/details'
+  modify_thread:
+    method: 'POST'
+    path: '/api/thread/details'
+
+  create_posts:
+    method: 'POST'
+    path: '/api/thread/create'
+  get_thread_posts:
+    method: 'POST'
+    path: '/api/thread/posts'
+
+  get_post:
+    method: 'GET'
+    path: '/api/post/details'
+  modify_post:
+    method: 'POST'
+    path: '/api/post/details'
+
+  get_all_tables_count:
+    method: 'GET'
+    path: '/api/service/status'
+  clear_all_tables:
+    method: 'POST'
+    path: '/api/service/clear'

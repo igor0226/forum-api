@@ -1,6 +1,6 @@
 const { VueLoaderPlugin } = require('vue-loader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const htmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const path = require('path');
 
@@ -58,7 +58,7 @@ module.exports = {
     plugins: [
         new MiniCssExtractPlugin(),
         new VueLoaderPlugin(),
-        new htmlWebpackPlugin({
+        new HtmlWebpackPlugin({
             template: path.resolve(__dirname, 'index.html'),
             favicon: './assets/favicon.ico',
         }),
@@ -68,5 +68,5 @@ module.exports = {
             vue$: 'vue/dist/vue.runtime.esm.js',
         },
         extensions: ['*', '.js', '.vue', '.json'],
-    }
+    },
 };

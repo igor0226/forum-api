@@ -5,6 +5,7 @@ from handlers.forum import create_forum, get_forum, get_all_users
 from handlers.thread import create_thread, get_threads, make_thread_vote, get_thread_details, modify_thread
 from handlers.post import create_posts, get_thread_posts, get_post, modify_post
 from handlers.service import get_all_tables_count, clear_all_tables
+from handlers.analytics import options_prefetch, get_endpoints
 from logger import app_logger
 from perf_logger import perf_logger_worker, q
 
@@ -13,9 +14,7 @@ from perf_logger import perf_logger_worker, q
 # TODO: close db socket before exiting app
 # TODO: git hooks
 # TODO: run flake8 and fix all errors
-# TODO: make yaml config
 # TODO: check SQL injections
-# TODO: may be provide body from validate_json
 # TODO: make own tests
 # TODO: catch and log all project exceptions
 # TODO: pep8 warnings
@@ -47,6 +46,10 @@ app.router.add_route('POST', '/api/post/{id}/details', modify_post)
 
 app.router.add_route('GET', '/api/service/status', get_all_tables_count)
 app.router.add_route('POST', '/api/service/clear', clear_all_tables)
+
+# analytics
+app.router.add_route('OPTIONS', '/{tail:.*}', options_prefetch)
+app.router.add_route('GET', '/analytics/endpoints', get_endpoints)
 
 # perf logging
 # perf_logging_thread = Thread(
