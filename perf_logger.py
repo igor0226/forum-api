@@ -2,6 +2,7 @@ import os
 import pathlib
 import json
 from queue import Queue
+from datetime import datetime
 
 
 class PerfLogger:
@@ -14,9 +15,17 @@ class PerfLogger:
             log_dir,
             'perf',
         )
+        cur_date = datetime.now()
+        log_file_name = 'duration-{}.{}.{}-{}:{}.json'.format(
+            cur_date.day,
+            cur_date.month,
+            cur_date.year,
+            cur_date.hour,
+            cur_date.minute,
+        )
         self.log_file = os.path.join(
             log_inner_dir,
-            'durations.json',
+            log_file_name,
         )
 
         if not os.path.exists(log_dir):
@@ -25,10 +34,15 @@ class PerfLogger:
         if not os.path.exists(log_inner_dir):
             os.mkdir(log_inner_dir)
 
-        if not os.path.exists(self.log_file):
-            open(self.log_file, 'w')
+        self.log_file_created = False
 
     def write_duration(self, key, duration):
+        if not self.log_file_created:
+            if not os.path.exists(self.log_file):
+                open(self.log_file, 'w')
+
+            self.log_file_created = True
+
         with open(self.log_file, 'r+') as f:
             try:
                 data = json.load(f) or {}

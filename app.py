@@ -1,14 +1,24 @@
 from aiohttp import web
+import argparse
 from threading import Thread
 from handlers.user import create_user, get_user, modify_user
 from handlers.forum import create_forum, get_forum, get_all_users
 from handlers.thread import create_thread, get_threads, make_thread_vote, get_thread_details, modify_thread
 from handlers.post import create_posts, get_thread_posts, get_post, modify_post
 from handlers.service import get_all_tables_count, clear_all_tables
-from handlers.analytics import options_prefetch, get_endpoints
+from handlers.analytics import options_prefetch, get_endpoints, get_perf_reports_list
 from logger import app_logger
 from perf_logger import perf_logger_worker, q
 
+parser = argparse.ArgumentParser(description='App params')
+parser.add_argument(
+    '--log-performance',
+    help='enable perf logger',
+    choices=('True', 'False'),
+)
+parser.set_defaults(log_performance=False)
+args = parser.parse_args()
+use_perf_logger = args.log_performance == 'True'
 
 # TODO use fetchVal/fetchRow where it is possible
 # TODO: close db socket before exiting app
@@ -50,18 +60,16 @@ app.router.add_route('POST', '/api/service/clear', clear_all_tables)
 # analytics
 app.router.add_route('OPTIONS', '/{tail:.*}', options_prefetch)
 app.router.add_route('GET', '/analytics/endpoints', get_endpoints)
+app.router.add_route('GET', '/analytics/reports', get_perf_reports_list)
 
-# perf logging
-# perf_logging_thread = Thread(
-#     target=perf_logger_worker,
-#     args=(q,),
-# )
-# perf_logging_thread.start()
-# perf_logging_thread.join()
-# perf logging
+if use_perf_logger:
+    perf_logging_thread = Thread(
+        target=perf_logger_worker,
+        args=(q,),
+    )
+    perf_logging_thread.daemon = True
+    perf_logging_thread.start()
 
 app_logger.info('app started')
 web.run_app(app, port=5000)
 app_logger.info('app stopped')
-
-
