@@ -1,7 +1,9 @@
 from aiohttp import web
 import os
 import pathlib
+import json
 from config import app_config
+from handlers.helpers import is_non_empty_file, aggregate_perf_report
 
 
 def get_cors_headers():
@@ -40,7 +42,19 @@ async def get_perf_reports_list(_):
         'perf',
     )
 
-    body = list(map(lambda f: f[9:-5:], os.listdir(log_dir)))
+    non_empty_files = list(filter(
+        lambda f: is_non_empty_file(f, log_dir),
+        os.listdir(log_dir),
+    ))
+
+    body = dict()
+
+    for report_file_name in list(non_empty_files):
+        report_file = os.path.join(log_dir, report_file_name)
+        report_data = aggregate_perf_report(report_file)
+        # duration-name.json -> name
+        formatted_report_file = 'Report #{}'.format(report_file_name[9:-5:])
+        body.update({formatted_report_file: report_data})
 
     return web.json_response(
         status=web.HTTPOk.status_code,

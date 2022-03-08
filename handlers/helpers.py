@@ -1,4 +1,7 @@
 import re
+import os
+import json
+import math
 from typing import Dict
 from time import time
 from json import decoder
@@ -181,3 +184,43 @@ def validate_json(*fields: Dict):
         return inner
 
     return wrapper
+
+
+def is_non_empty_file(file, dir_name):
+    file_name = os.path.join(dir_name, file)
+
+    return bool(os.path.getsize(file_name))
+
+
+def _format_duration(duration):
+    return round(duration, 5)
+
+
+def aggregate_perf_report(report_file):
+    report = dict()
+
+    with open(report_file) as f:
+        report_lines = json.load(f)
+        for report_line in report_lines:
+            for path_key in report_line:
+                durations = report.get(path_key) or []
+                durations.append(report_line.get(path_key))
+                report.update({path_key: durations})
+
+    percentiles = dict()
+
+    # percentiles
+    for path_key in report:
+        durations = report.get(path_key)
+        durations.sort()
+        durations_len = len(durations)
+        perc_dict = dict()
+        perc_dict.update({'10 percentile': _format_duration(durations[math.floor(durations_len / 10)])})
+        perc_dict.update({'25 percentile': _format_duration(durations[math.floor(durations_len / 4)])})
+        perc_dict.update({'50 percentile': _format_duration(durations[math.floor(durations_len / 2)])})
+        perc_dict.update({'75 percentile': _format_duration(durations[math.floor(durations_len * 7.5 / 10)])})
+        perc_dict.update({'90 percentile': _format_duration(durations[math.floor(durations_len * 9 / 10)])})
+        percentiles.update({path_key: perc_dict})
+
+    return percentiles
+

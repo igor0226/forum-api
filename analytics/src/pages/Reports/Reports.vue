@@ -51,9 +51,7 @@
             cn: method => `api-card api-card_method_${method.toLowerCase()}`,
 
             fetchEndpoints() {
-                fetch('http://localhost:5000/analytics/endpoints', {
-                    headers: { 'content-type': 'application/json' },
-                })
+                fetch('http://localhost:5000/analytics/endpoints')
                     .then(response => response.json())
                     .then(endpoints => {
                         this.handlers = endpoints;
@@ -61,12 +59,11 @@
             },
 
             fetchReportTitles() {
-                fetch('http://localhost:5000/analytics/reports', {
-                    headers: { 'content-type': 'application/json' },
-                })
+                fetch('http://localhost:5000/analytics/reports')
                     .then(response => response.json())
                     .then(reportTitles => {
-                        this.reportTitles = reportTitles;
+                        console.log(reportTitles);
+                        // this.reportTitles = reportTitles;
                     });
             },
         },
