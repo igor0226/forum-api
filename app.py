@@ -6,7 +6,7 @@ from handlers.forum import create_forum, get_forum, get_all_users
 from handlers.thread import create_thread, get_threads, make_thread_vote, get_thread_details, modify_thread
 from handlers.post import create_posts, get_thread_posts, get_post, modify_post
 from handlers.service import get_all_tables_count, clear_all_tables
-from handlers.analytics import options_prefetch, get_endpoints, get_perf_reports_list
+from handlers.analytics import options_prefetch, get_endpoints, get_perf_reports_list, get_perf_report
 from logger import app_logger
 from perf_logger import perf_logger_worker, q
 
@@ -61,6 +61,7 @@ app.router.add_route('POST', '/api/service/clear', clear_all_tables)
 app.router.add_route('OPTIONS', '/{tail:.*}', options_prefetch)
 app.router.add_route('GET', '/analytics/endpoints', get_endpoints)
 app.router.add_route('GET', '/analytics/reports', get_perf_reports_list)
+app.router.add_route('GET', '/analytics/{report_id}/details', get_perf_report)
 
 if use_perf_logger:
     perf_logging_thread = Thread(

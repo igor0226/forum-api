@@ -7,59 +7,76 @@ db_settings:
 
 endpoints:
   create_user:
-    method: 'POST'
-    path: '/api/user/create'
+    method: POST
+    path: /api/user/create
+    description: Create a new user
   get_user:
-    method: 'POST'
-    path: '/api/user/profile'
+    method: POST
+    path: /api/user/profile
+    description: Get user by nickname
   modify_user:
-    method: 'POST'
-    path: '/api/user/profile'
+    method: POST
+    path: /api/user/profile
+    description: Modify user fields
 
   create_forum:
-    method: 'POST'
-    path: '/api/forum/create'
+    method: POST
+    path: /api/forum/create
+    description: Create a new forum (contains threads)
   get_forum:
-    method: 'GET'
-    path: '/api/forum/details'
+    method: GET
+    path: /api/forum/details
+    description: Get forum by slug
 
   create_thread:
-    method: 'POST'
-    path: '/api/forum/create'
+    method: POST
+    path: /api/forum/create
+    description: Create a new thread
   get_threads:
-    method: 'GET'
-    path: '/api/forum/threads'
+    method: GET
+    path: /api/forum/threads
+    description: Get threads by slug; limit, since, desc
   get_all_users:
-    method: 'GET'
-    path: '/api/forum/users'
+    method: GET
+    path: /api/forum/users
+    description: Get all forum users by forum slug
 
   make_thread_vote:
-    method: 'POST'
-    path: '/api/thread/vote'
+    method: POST
+    path: /api/thread/vote
+    description: Make thread vote; slug or id
   get_thread_details:
-    method: 'GET'
-    path: '/api/thread/details'
+    method: GET
+    path: /api/thread/details
+    description: Get thread details by slug or id
   modify_thread:
-    method: 'POST'
-    path: '/api/thread/details'
+    method: POST
+    path: /api/thread/details
+    description: Modify thread, match by slug or id
 
   create_posts:
-    method: 'POST'
-    path: '/api/thread/create'
+    method: POST
+    path: /api/thread/create
+    description: Push new posts to the thread
   get_thread_posts:
-    method: 'POST'
-    path: '/api/thread/posts'
+    method: POST
+    path: /api/thread/posts
+    description: Get posts from thread got by slug or id
 
   get_post:
-    method: 'GET'
-    path: '/api/post/details'
+    method: GET
+    path: /api/post/details
+    description: Get post details; user, thread, forum info can be included
   modify_post:
-    method: 'POST'
-    path: '/api/post/details'
+    method: POST
+    path: /api/post/details
+    description: Modify post got by id
 
   get_all_tables_count:
-    method: 'GET'
-    path: '/api/service/status'
+    method: GET
+    path: /api/service/status
+    description: Get all rows number
   clear_all_tables:
-    method: 'POST'
-    path: '/api/service/clear'
+    method: POST
+    path: /api/service/clear
+    description: Clear all db tables

@@ -12,9 +12,7 @@
                 <div class="md-list-item-text api-card-url">{{ handler.path }}</div>
 
                 <md-list slot="md-expand">
-                    <md-list-item class="md-inset">World</md-list-item>
-                    <md-list-item class="md-inset">Europe</md-list-item>
-                    <md-list-item class="md-inset">South America</md-list-item>
+                    <md-list-item class="md-inset">{{ handler.description }}</md-list-item>
                 </md-list>
             </md-list-item>
         </md-list>
@@ -23,15 +21,14 @@
             <md-list-item
                 v-for="report in reportTitles"
                 :key="report"
+                v-on:md-expanded="onReportExpand(report)"
                 class="api-card"
                 md-expand
             >
-                <div class="report-card-title">{{ report }}</div>
+                <div class="report-card-title">Report #{{ report }}</div>
 
                 <md-list slot="md-expand">
-                    <md-list-item class="md-inset">World</md-list-item>
-                    <md-list-item class="md-inset">Europe</md-list-item>
-                    <md-list-item class="md-inset">South America</md-list-item>
+                    <md-list-item class="md-inset">Loading...</md-list-item>
                 </md-list>
             </md-list-item>
         </md-list>
@@ -62,14 +59,31 @@
                 fetch('http://localhost:5000/analytics/reports')
                     .then(response => response.json())
                     .then(reportTitles => {
-                        console.log(reportTitles);
-                        // this.reportTitles = reportTitles;
+                        this.reportTitles = reportTitles;
                     });
+            },
+
+            fetchReportDetails(reportName) {
+                fetch(`http://localhost:5000/analytics/${reportName}/details`)
+                    .then(response => response.json())
+                    .then(details => {
+                        console.log(details);
+                        this.reportDetailsMap[reportName] = details;
+                    });
+            },
+
+            onReportExpand(reportName) {
+                if (this.reportDetailsMap[reportName]) {
+                    return;
+                }
+
+                this.fetchReportDetails(reportName);
             },
         },
         data: () => ({
             handlers: [],
             reportTitles: [],
+            reportDetailsMap: {},
         }),
     };
 </script>

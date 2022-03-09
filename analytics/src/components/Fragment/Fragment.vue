@@ -12,7 +12,7 @@
             className: {
                 type: String,
                 default: '',
-            }
-        }
+            },
+        },
     };
 </script>

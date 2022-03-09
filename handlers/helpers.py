@@ -196,16 +196,24 @@ def _format_duration(duration):
     return round(duration, 5)
 
 
+def _get_percentile(data, percentile):
+    data_len = len(data)
+    return _format_duration(data[math.floor(data_len * percentile / 100)])
+
+
 def aggregate_perf_report(report_file):
     report = dict()
 
-    with open(report_file) as f:
-        report_lines = json.load(f)
-        for report_line in report_lines:
-            for path_key in report_line:
-                durations = report.get(path_key) or []
-                durations.append(report_line.get(path_key))
-                report.update({path_key: durations})
+    try:
+        with open(report_file) as f:
+            report_lines = json.load(f)
+            for report_line in report_lines:
+                for path_key in report_line:
+                    durations = report.get(path_key) or []
+                    durations.append(report_line.get(path_key))
+                    report.update({path_key: durations})
+    except OSError:
+        return None
 
     percentiles = dict()
 
@@ -213,13 +221,14 @@ def aggregate_perf_report(report_file):
     for path_key in report:
         durations = report.get(path_key)
         durations.sort()
-        durations_len = len(durations)
+
         perc_dict = dict()
-        perc_dict.update({'10 percentile': _format_duration(durations[math.floor(durations_len / 10)])})
-        perc_dict.update({'25 percentile': _format_duration(durations[math.floor(durations_len / 4)])})
-        perc_dict.update({'50 percentile': _format_duration(durations[math.floor(durations_len / 2)])})
-        perc_dict.update({'75 percentile': _format_duration(durations[math.floor(durations_len * 7.5 / 10)])})
-        perc_dict.update({'90 percentile': _format_duration(durations[math.floor(durations_len * 9 / 10)])})
+        perc_dict.update({'10 percentile': _get_percentile(durations, 10)})
+        perc_dict.update({'25 percentile': _get_percentile(durations, 25)})
+        perc_dict.update({'50 percentile': _get_percentile(durations, 50)})
+        perc_dict.update({'75 percentile': _get_percentile(durations, 75)})
+        perc_dict.update({'90 percentile': _get_percentile(durations, 90)})
+
         percentiles.update({path_key: perc_dict})
 
     return percentiles

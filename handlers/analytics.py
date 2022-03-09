@@ -1,9 +1,13 @@
 from aiohttp import web
 import os
 import pathlib
-import json
 from config import app_config
-from handlers.helpers import is_non_empty_file, aggregate_perf_report
+from handlers.helpers import (
+    is_non_empty_file,
+    aggregate_perf_report,
+    validate_route_param,
+)
+from handlers.validators import not_null_str
 
 
 def get_cors_headers():
@@ -26,6 +30,7 @@ async def get_endpoints(_):
         body.append({
             'method': endpoint['method'],
             'path': endpoint['path'],
+            'description': endpoint['description'],
         })
 
     return web.json_response(
@@ -47,17 +52,45 @@ async def get_perf_reports_list(_):
         os.listdir(log_dir),
     ))
 
-    body = dict()
+    body = list()
 
     for report_file_name in list(non_empty_files):
-        report_file = os.path.join(log_dir, report_file_name)
-        report_data = aggregate_perf_report(report_file)
         # duration-name.json -> name
-        formatted_report_file = 'Report #{}'.format(report_file_name[9:-5:])
-        body.update({formatted_report_file: report_data})
+        formatted_report_file = report_file_name[9:-5:]
+        body.append(formatted_report_file)
 
     return web.json_response(
         status=web.HTTPOk.status_code,
         data=body,
+        headers=get_cors_headers(),
+    )
+
+
+@validate_route_param(
+    name='report_id',
+    validator=not_null_str,
+)
+async def get_perf_report(request: web.Request):
+    report_id = request.match_info['report_id']
+    report_file_name = 'duration-{}.json'.format(report_id)
+
+    log_dir = os.path.join(
+        pathlib.Path(__file__).parent.parent.resolve(),
+        'log',
+        'perf',
+    )
+    full_report_file_name = os.path.join(log_dir, report_file_name)
+    report_details = aggregate_perf_report(full_report_file_name)
+
+    if not report_details:
+        return web.json_response(
+            status=web.HTTPNotFound.status_code,
+            data={'message': 'bad file'},
+            headers=get_cors_headers(),
+        )
+
+    return web.json_response(
+        status=web.HTTPOk.status_code,
+        data=report_details,
         headers=get_cors_headers(),
     )
