@@ -215,21 +215,39 @@ def aggregate_perf_report(report_file):
     except OSError:
         return None
 
-    percentiles = dict()
+    percentiles = list()
 
     # percentiles
     for path_key in report:
         durations = report.get(path_key)
         durations.sort()
 
-        perc_dict = dict()
-        perc_dict.update({'10 percentile': _get_percentile(durations, 10)})
-        perc_dict.update({'25 percentile': _get_percentile(durations, 25)})
-        perc_dict.update({'50 percentile': _get_percentile(durations, 50)})
-        perc_dict.update({'75 percentile': _get_percentile(durations, 75)})
-        perc_dict.update({'90 percentile': _get_percentile(durations, 90)})
+        perc_list = list()
+        perc_list.append({
+            'name': '10 percentile',
+            'value': _get_percentile(durations, 10)
+        })
+        perc_list.append({
+            'name': '25 percentile',
+            'value': _get_percentile(durations, 25)
+        })
+        perc_list.append({
+            'name': '50 percentile',
+            'value': _get_percentile(durations, 50)
+        })
+        perc_list.append({
+            'name': '75 percentile',
+            'value': _get_percentile(durations, 75)
+        })
+        perc_list.append({
+            'name': '90 percentile',
+            'value': _get_percentile(durations, 90)
+        })
 
-        percentiles.update({path_key: perc_dict})
+        percentiles.append({
+            'path': path_key,
+            'percentiles': perc_list,
+        })
 
     return percentiles
 

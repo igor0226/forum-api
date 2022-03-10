@@ -11,7 +11,6 @@ module.exports = {
     ],
     parserOptions: {
         parser: require('babel-eslint'),
-        ecmaVersion: 6,
     },
     plugins: [
         'html',

@@ -28,7 +28,27 @@
                 <div class="report-card-title">Report #{{ report }}</div>
 
                 <md-list slot="md-expand">
-                    <md-list-item class="md-inset">Loading...</md-list-item>
+                    <md-list v-if="reportDetailsMap[report]">
+                        <md-list-item
+                            class="md-inset"
+                            v-for="handler in reportDetailsMap[report]"
+                            :key="handler.path"
+                            md-expand
+                        >
+                            <div class="report-card-title">{{ handler.path }}</div>
+                            <md-list slot="md-expand">
+                                <md-list-item
+                                    v-for="mark in handler.percentiles"
+                                    :key="mark.name"
+                                >{{ mark.name }} {{ mark.value }}</md-list-item>
+                            </md-list>
+                        </md-list-item>
+                    </md-list>
+
+                    <md-list-item
+                        class="md-inset"
+                        v-else
+                    >Loading...</md-list-item>
                 </md-list>
             </md-list-item>
         </md-list>
@@ -68,7 +88,10 @@
                     .then(response => response.json())
                     .then(details => {
                         console.log(details);
-                        this.reportDetailsMap[reportName] = details;
+                        this.reportDetailsMap = {
+                            ...this.reportDetailsMap,
+                            [reportName]: details,
+                        };
                     });
             },
 
@@ -79,7 +102,14 @@
 
                 this.fetchReportDetails(reportName);
             },
+
+            getReportDetails(reportName) {
+                const report = this.reportDetailsMap[reportName];
+
+                return { report, fetched: Boolean(report) };
+            },
         },
+
         data: () => ({
             handlers: [],
             reportTitles: [],
