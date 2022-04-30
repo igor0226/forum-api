@@ -3,6 +3,7 @@
         <md-toolbar class="md-primary">
             <h1 class="md-title">Backend analytics</h1>
             <md-tabs class="md-primary">
+                <md-tab md-label="Wiki"></md-tab>
                 <md-tab md-label="Reports"></md-tab>
                 <md-tab md-label="Monitoring"></md-tab>
                 <md-tab md-label="Change log"></md-tab>
