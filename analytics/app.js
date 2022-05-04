@@ -8,6 +8,8 @@ import './src/components/registry';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 
+import './src/styles/main.css';
+
 Vue.config.productionTip = false;
 
 Vue.use(VueMaterial);

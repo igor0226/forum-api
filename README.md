@@ -22,7 +22,7 @@ python app.py
 ```
 
 ## Analytics tools
-Simple Vue frontend project.
+Simple Vue.js frontend project.
 It can be used for performance reports reviewing
 
 Launch:
