@@ -23,11 +23,5 @@ python app.py
 
 ## Analytics tools
 Simple Vue.js frontend project.
-It can be used for performance reports reviewing
 
-Launch:
-```shell
-cd analytics
-npm i
-npm run dev
-```
+Navigate to ```analytics``` dir and learn README

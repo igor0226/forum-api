@@ -244,8 +244,11 @@ def aggregate_perf_report(report_file):
             'value': _get_percentile(durations, 90)
         })
 
+        (path, method) = path_key.split(':')
         percentiles.append({
-            'path': path_key,
+            'key': path_key,
+            'path': path,
+            'method': method,
             'percentiles': perc_list,
         })
 

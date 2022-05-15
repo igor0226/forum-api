@@ -1,4 +1,3 @@
-import asyncio
 import os
 import pathlib
 from aiohttp import web
@@ -82,9 +81,6 @@ async def get_perf_report(request: web.Request):
     )
     full_report_file_name = os.path.join(log_dir, report_file_name)
     report_details = aggregate_perf_report(full_report_file_name)
-
-    # testing client design
-    await asyncio.sleep(1)
 
     if not report_details:
         return web.json_response(
