@@ -8,7 +8,8 @@ from json import decoder
 from aiohttp import web
 from handlers.validators import default_validator
 from logger import app_logger
-from perf_logger import q
+from perf.perf_logger import q
+from perf.rps_queue import rps_queue
 
 api_param_reg_exp = re.compile('^/api/[^/]+/([^/]+)/[^/]+$')
 
@@ -34,6 +35,7 @@ def _get_url_key(url, method):
 
 def add_logging(handler):
     async def inner(request: web.Request):
+        rps_queue.append('new request')
         body = await request.text()
         app_logger.info('GOT {} {}, body: {}'.format(
             request.method,

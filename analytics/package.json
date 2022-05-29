@@ -25,11 +25,13 @@
   "dependencies": {
     "@babel/core": "7.16.7",
     "@babel/preset-env": "7.16.8",
+    "apexcharts": "^3.35.3",
     "babel-eslint": "10.1.0",
     "eslint": "8.7.0",
     "path": "0.12.7",
     "source-map": "0.7.3",
     "vue": "2.6.14",
+    "vue-apexcharts": "^1.6.2",
     "vue-loader": "15.9.8",
     "vue-material": "1.0.0-beta-15",
     "vue-router": "3.5.3",

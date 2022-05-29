@@ -1,15 +1,17 @@
 import os
 import pathlib
 import json
+from time import time
 from queue import Queue
 from datetime import datetime
+from perf.rps_queue import rps_queue
 
 
 class PerfLogger:
     def __init__(self):
         log_dir = os.path.join(
             pathlib.Path(__file__).parent.resolve(),
-            'log',
+            '../log',
         )
         log_inner_dir = os.path.join(
             log_dir,
@@ -43,20 +45,17 @@ class PerfLogger:
 
             self.log_file_created = True
 
-        with open(self.log_file, 'r+') as f:
+        with open(self.log_file, 'r') as f:
             try:
-                data = json.load(f) or {}
+                data = json.load(f) or []
             except json.JSONDecodeError:
-                data = {}
+                data = []
 
-            durations = data.get(key, [])
-            durations.append(duration)
-            data = {
-                **data,
-                str(key): duration,
-            }
-
-            json.dump(data, f, indent=4)
+            with open(self.log_file, 'w') as empty_file:
+                data.append({
+                    str(key): duration
+                })
+                json.dump(data, empty_file, indent=4)
 
 
 q = Queue()
@@ -69,4 +68,27 @@ def perf_logger_worker(observations_queue):
         (key, duration) = observations_queue.get()
         perf_logger.write_duration(key, duration)
         # observations_queue.task_done()
+
+
+rps_list = []
+MAX_RPS_LIST_LENGTH = 50
+
+
+def monitoring_worker():
+    last_tick = time()
+    global rps_list
+
+    while True:
+        if time() - last_tick > 1:
+            last_tick = time()
+        else:
+            continue
+
+        rps_list.append(len(rps_queue))
+
+        if len(rps_list) > MAX_RPS_LIST_LENGTH:
+            start = len(rps_list) - MAX_RPS_LIST_LENGTH
+            rps_list = rps_list[start:]
+
+        rps_queue.clear()
 
