@@ -21,11 +21,9 @@
             socket.addEventListener('message', ({ data }) => {
                 if (data && data.indexOf('[') === 0) {
                     const rpsList = JSON.parse(data);
-                    this.series = this.makeChartSeries(rpsList);
-                    this.options = this.makeChartOptions(this.options, rpsList);
+                    this.makeChartSeries(rpsList);
                 } else {
                     this.updateChartSeries(data);
-                    this.updateChartOptions();
                 }
             });
 
@@ -35,42 +33,34 @@
         },
 
         methods: {
-            updateChartSeries(rps) {
-                this.series = this.makeChartSeries([...this.series[0].data, Number(rps)]);
+            getTime(baseDate, secOffset) {
+                return new Date(baseDate + secOffset * 1000);
             },
 
-            makeChartSeries(rpsList) {
-                return [{
+            updateChartSeries(newRps) {
+                const newPoint = { x: this.getTime(Date.now(), 0), y: Number(newRps) };
+                const newData = [...this.series[0].data, newPoint].slice(-50);
+
+                this.series = [{
                     name: 'rps',
-                    data: rpsList,
+                    data: newData,
                 }];
             },
 
-            updateChartOptions() {
-                const date = new Date(Date.now());
-                const timestamp = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-
-                this.options = {
-                    ...this.options,
-                    xaxis: {
-                        timestamps: [...this.options.xaxis.timestamps, timestamp],
-                    },
-                };
-            },
-
-            makeChartOptions(options, rpsList) {
+            makeChartSeries(rpsList) {
                 const baseDate = Date.now();
                 const rpsListLen = rpsList.length;
 
-                return {
-                    ...options,
-                    xaxis: {
-                        timestamps: rpsList.map((_, i) => {
-                            const date = new Date(baseDate - rpsListLen + i);
-                            return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-                        }),
-                    },
-                };
+                this.series = [{
+                    name: 'rps',
+                    data: rpsList.map((rps, i) => {
+                        const date = this.getTime(baseDate, i - rpsListLen);
+                        return {
+                            x: date.getTime(),
+                            y: rps,
+                        };
+                    }),
+                }];
             },
         },
 
@@ -79,9 +69,18 @@
                 options: {
                     chart: {
                         id: 'vuechart-example',
+                        type: 'line',
                     },
                     xaxis: {
-                        timestamps: [],
+                        type: 'datetime',
+                        labels: {
+                            datetimeUTC: false,
+                        },
+                    },
+                    tooltip: {
+                        x: {
+                            format: 'dd.MM.yyyy HH:mm:ss',
+                        },
                     },
                 },
                 series: [{

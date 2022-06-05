@@ -1,5 +1,5 @@
 from aiohttp import web
-from perf.perf_logger import rps_list
+from perf.perf_logger import get_rps_list
 import asyncio
 from time import time
 
@@ -13,8 +13,11 @@ async def ws_handler(req: web.Request):
 
     async for msg in ws:
         if msg.type == web.WSMsgType.text:
+            rps_list = get_rps_list()
             await ws.send_json(data=rps_list)
+
             while not ws.closed:
+                rps_list = get_rps_list()
                 requests_num = 0 if not len(rps_list) else rps_list[len(rps_list) - 1]
                 seconds_passed = time() - last_tick
 
@@ -23,6 +26,7 @@ async def ws_handler(req: web.Request):
 
                 last_tick = time()
 
+                print('REQ', rps_list)
                 try:
                     await ws.send_str(str(requests_num))
                 except ConnectionResetError:

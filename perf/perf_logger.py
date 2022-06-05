@@ -74,6 +74,10 @@ rps_list = []
 MAX_RPS_LIST_LENGTH = 50
 
 
+def get_rps_list():
+    return rps_list
+
+
 def monitoring_worker():
     last_tick = time()
     global rps_list
@@ -86,9 +90,14 @@ def monitoring_worker():
 
         rps_list.append(len(rps_queue))
 
+        print('_______')
+        print(len(rps_queue))
+        print(rps_list)
         if len(rps_list) > MAX_RPS_LIST_LENGTH:
             start = len(rps_list) - MAX_RPS_LIST_LENGTH
             rps_list = rps_list[start:]
 
+        print(rps_list)
+        print('_______')
         rps_queue.clear()
 

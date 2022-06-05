@@ -18,7 +18,6 @@ def worker():
 
 
 if __name__ == '__main__':
-    worker()
-    # for _ in range(0, args.threads):
-    #     thread = Process(target=worker)
-    #     thread.start()
+    for _ in range(0, args.threads):
+        thread = Process(target=worker)
+        thread.start()
