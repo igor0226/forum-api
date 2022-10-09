@@ -1,1 +1,4 @@
-rps_queue = list()
+from multiprocessing import Queue
+
+rps_queue = Queue()
+

@@ -1,15 +1,16 @@
 from aiohttp import web
 import argparse
-from threading import Thread
+from multiprocessing import Process
 from handlers.user import create_user, get_user, modify_user
 from handlers.forum import create_forum, get_forum, get_all_users
 from handlers.thread import create_thread, get_threads, make_thread_vote, get_thread_details, modify_thread
 from handlers.post import create_posts, get_thread_posts, get_post, modify_post
 from handlers.service import get_all_tables_count, clear_all_tables
 from handlers.analytics import options_prefetch, get_endpoints, get_perf_reports_list, get_perf_report
-from handlers.monitoring import ws_handler
+from ws_monitoring import ws_handler
 from logger import app_logger
 from perf.perf_logger import perf_logger_worker, q, monitoring_worker
+from perf.rps_queue import rps_queue
 
 parser = argparse.ArgumentParser(description='App params')
 parser.add_argument(
@@ -63,20 +64,19 @@ app.router.add_route('OPTIONS', '/{tail:.*}', options_prefetch)
 app.router.add_route('GET', '/analytics/endpoints', get_endpoints)
 app.router.add_route('GET', '/analytics/reports', get_perf_reports_list)
 app.router.add_route('GET', '/analytics/{report_id}/details', get_perf_report)
-
 app.router.add_route('GET', '/monitoring', ws_handler)
 
 if use_perf_logger:
-    perf_logging_thread = Thread(
+    perf_logging_worker = Process(
         target=perf_logger_worker,
         args=(q,),
     )
-    perf_logging_thread.daemon = True
-    perf_logging_thread.start()
+    perf_logging_worker.daemon = True
+    perf_logging_worker.start()
 
-    perf_monitoring_worker = Thread(
+    perf_monitoring_worker = Process(
         target=monitoring_worker,
-        args=(),
+        args=(rps_queue,),
     )
     perf_monitoring_worker.daemon = True
     perf_monitoring_worker.start()

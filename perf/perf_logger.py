@@ -2,9 +2,8 @@ import os
 import pathlib
 import json
 from time import time
-from queue import Queue
+from multiprocessing import Queue
 from datetime import datetime
-from perf.rps_queue import rps_queue
 
 
 class PerfLogger:
@@ -67,18 +66,24 @@ def perf_logger_worker(observations_queue):
     while True:
         (key, duration) = observations_queue.get()
         perf_logger.write_duration(key, duration)
-        # observations_queue.task_done()
 
 
+RPS_REPORT_FILE = os.path.join(
+    pathlib.Path(__file__).parent.resolve(),
+    '../log',
+    'rps',
+    'rps.json',
+)
 rps_list = []
 MAX_RPS_LIST_LENGTH = 50
 
 
-def get_rps_list():
-    return rps_list
+def dump_rps():
+    with open(RPS_REPORT_FILE, 'w') as f:
+        json.dump(rps_list, f, indent=4)
 
 
-def monitoring_worker():
+def monitoring_worker(rps_queue):
     last_tick = time()
     global rps_list
 
@@ -88,16 +93,13 @@ def monitoring_worker():
         else:
             continue
 
-        rps_list.append(len(rps_queue))
+        rps_list.append(rps_queue.qsize())
+        dump_rps()
 
-        print('_______')
-        print(len(rps_queue))
-        print(rps_list)
         if len(rps_list) > MAX_RPS_LIST_LENGTH:
             start = len(rps_list) - MAX_RPS_LIST_LENGTH
             rps_list = rps_list[start:]
 
-        print(rps_list)
-        print('_______')
-        rps_queue.clear()
+        while not rps_queue.empty():
+            rps_queue.get()
 

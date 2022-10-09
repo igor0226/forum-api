@@ -35,7 +35,7 @@ def _get_url_key(url, method):
 
 def add_logging(handler):
     async def inner(request: web.Request):
-        rps_queue.append('new request')
+        rps_queue.put('new request')
         body = await request.text()
         app_logger.info('GOT {} {}, body: {}'.format(
             request.method,
