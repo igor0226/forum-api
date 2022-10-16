@@ -41,12 +41,7 @@ async def get_endpoints(_):
 
 
 async def get_perf_reports_list(_):
-    log_dir = os.path.join(
-        pathlib.Path(__file__).parent.parent.resolve(),
-        'log',
-        'perf',
-    )
-
+    log_dir = os.path.join(app_config['logs_dir'], 'perf')
     non_empty_files = list(filter(
         lambda f: is_non_empty_file(f, log_dir),
         os.listdir(log_dir),
@@ -74,11 +69,7 @@ async def get_perf_report(request: web.Request):
     report_id = request.match_info['report_id']
     report_file_name = 'duration-{}.json'.format(report_id)
 
-    log_dir = os.path.join(
-        pathlib.Path(__file__).parent.parent.resolve(),
-        'log',
-        'perf',
-    )
+    log_dir = os.path.join(app_config['logs_dir'], 'perf')
     full_report_file_name = os.path.join(log_dir, report_file_name)
     report_details = aggregate_perf_report(full_report_file_name)
 

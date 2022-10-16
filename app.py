@@ -9,8 +9,10 @@ from handlers.service import get_all_tables_count, clear_all_tables
 from handlers.analytics import options_prefetch, get_endpoints, get_perf_reports_list, get_perf_report
 from ws_monitoring import ws_handler
 from logger import app_logger
-from perf.perf_logger import perf_logger_worker, q, monitoring_worker
-from perf.rps_queue import rps_queue
+from perf.logger.worker import perf_logger_worker
+from perf.logger.queue import perf_logger_queue
+from perf.monitoring.worker import perf_monitoring_worker
+from perf.monitoring.queue import perf_monitoring_queue
 
 parser = argparse.ArgumentParser(description='App params')
 parser.add_argument(
@@ -67,19 +69,19 @@ app.router.add_route('GET', '/analytics/{report_id}/details', get_perf_report)
 app.router.add_route('GET', '/monitoring', ws_handler)
 
 if use_perf_logger:
-    perf_logging_worker = Process(
+    performance_logging_worker = Process(
         target=perf_logger_worker,
-        args=(q,),
+        args=(perf_logger_queue,),
     )
-    perf_logging_worker.daemon = True
-    perf_logging_worker.start()
+    performance_logging_worker.daemon = True
+    performance_logging_worker.start()
 
-    perf_monitoring_worker = Process(
-        target=monitoring_worker,
-        args=(rps_queue,),
+    performance_monitoring_worker = Process(
+        target=perf_monitoring_worker,
+        args=(perf_monitoring_queue,),
     )
-    perf_monitoring_worker.daemon = True
-    perf_monitoring_worker.start()
+    performance_monitoring_worker.daemon = True
+    performance_monitoring_worker.start()
 
 app_logger.info('app started')
 web.run_app(app, port=5000)

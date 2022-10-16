@@ -1,4 +1,3 @@
 from multiprocessing import Queue
 
-rps_queue = Queue()
-
+perf_logger_queue = Queue()
