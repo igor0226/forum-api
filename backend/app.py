@@ -7,7 +7,7 @@ from handlers.thread import create_thread, get_threads, make_thread_vote, get_th
 from handlers.post import create_posts, get_thread_posts, get_post, modify_post
 from handlers.service import get_all_tables_count, clear_all_tables
 from handlers.analytics import options_prefetch, get_endpoints, get_perf_reports_list, get_perf_report
-from ws_monitoring import ws_handler
+from handlers.ws_monitoring import ws_handler
 from logger import app_logger
 from perf.logger.worker import perf_logger_worker
 from perf.logger.queue import perf_logger_queue

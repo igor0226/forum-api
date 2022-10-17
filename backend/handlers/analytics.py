@@ -1,5 +1,4 @@
 import os
-import pathlib
 from aiohttp import web
 from config import app_config
 from handlers.helpers import (
