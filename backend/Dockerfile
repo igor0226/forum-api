@@ -1,9 +1,10 @@
 FROM python:3.8.15-alpine3.15
 
-COPY . .
+RUN mkdir backend
+COPY . backend
 # non-root user + venv
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN cd backend && pip install --upgrade pip && pip install -r requirements.txt
 
-CMD ["python", "app.py"]
+CMD ["python", "backend/app.py"]
 
 EXPOSE 5000:5000
