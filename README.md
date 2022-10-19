@@ -16,7 +16,7 @@
 ./scripts/backend/build_docker.sh
 ```
 ```shell
-./scripts/backend/build_docker.sh
+./scripts/frontend/build_docker.sh
 ```
 2) Launch it
 ```shell
@@ -26,7 +26,7 @@
 ./scripts/backend/run_docker.sh
 ```
 ```shell
-./scripts/backend/run_docker.sh
+./scripts/frontend/run_docker.sh
 ```
 
 ### App hosts
