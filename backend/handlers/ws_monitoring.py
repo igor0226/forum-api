@@ -3,9 +3,10 @@ import os
 import asyncio
 import json
 from time import time
+from config import app_config
 
 last_tick = time()
-RPS_REPORT_FILE = os.path.join('log', 'rps', 'rps.json')
+RPS_REPORT_FILE = os.path.join(app_config['logs_dir'], 'rps', 'rps.json')
 
 
 def read_rps_file():

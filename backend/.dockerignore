@@ -4,6 +4,7 @@
 *.pyc
 */__pycache__
 /.idea
+/log
 tech-db-forum
 tech-db-forum.dat.gz
 report.html

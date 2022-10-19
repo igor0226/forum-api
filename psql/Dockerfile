@@ -7,12 +7,12 @@ ENV POSTGRES_PASSWORD=password
 ENV POSTGRES_USER=igor
 ENV PGDATA=/var/lib/postgresql/data/pgdata
 
-ADD psql/init.sql /docker-entrypoint-initdb.d
-ADD psql/posts.sql /docker-entrypoint-initdb.d
-ADD psql/service.sql /docker-entrypoint-initdb.d
-ADD psql/tables.sql /docker-entrypoint-initdb.d
-ADD psql/threads.sql /docker-entrypoint-initdb.d
-ADD psql/users.sql /docker-entrypoint-initdb.d
+ADD inits/init.sql /docker-entrypoint-initdb.d
+ADD inits/posts.sql /docker-entrypoint-initdb.d
+ADD inits/service.sql /docker-entrypoint-initdb.d
+ADD inits/tables.sql /docker-entrypoint-initdb.d
+ADD inits/threads.sql /docker-entrypoint-initdb.d
+ADD inits/users.sql /docker-entrypoint-initdb.d
 
 RUN chown -R igor /docker-entrypoint-initdb.d
 RUN mv /docker-entrypoint-initdb.d/init.sql /docker-entrypoint-initdb.d/a.sql

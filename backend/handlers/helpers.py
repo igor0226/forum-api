@@ -214,7 +214,7 @@ def aggregate_perf_report(report_file):
                     durations = report.get(path_key) or []
                     durations.append(report_line.get(path_key))
                     report.update({path_key: durations})
-    except OSError:
+    except (OSError, json.decoder.JSONDecodeError):
         return None
 
     percentiles = list()
