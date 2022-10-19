@@ -70,6 +70,14 @@ async def get_perf_report(request: web.Request):
 
     log_dir = os.path.join(app_config['logs_dir'], 'perf')
     full_report_file_name = os.path.join(log_dir, report_file_name)
+
+    if not os.path.exists(full_report_file_name):
+        return web.json_response(
+            status=web.HTTPNotFound.status_code,
+            data={'message': 'bad file'},
+            headers=get_cors_headers(),
+        )
+
     report_details = aggregate_perf_report(full_report_file_name)
 
     if not report_details:

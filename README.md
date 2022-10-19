@@ -8,18 +8,30 @@
 
 ## Launch
 
-1) Build docker image
+1) Build docker images
 ```shell
-./scripts/build_docker.sh
+./scripts/psql/build_docker.sh
+```
+```shell
+./scripts/backend/build_docker.sh
+```
+```shell
+./scripts/backend/build_docker.sh
 ```
 2) Launch it
 ```shell
-./scripts/run_docker.sh
+./scripts/psql/run_docker.sh
 ```
-3) Launch python server
 ```shell
-python app.py
+./scripts/backend/run_docker.sh
 ```
+```shell
+./scripts/backend/run_docker.sh
+```
+
+### App hosts
+- frontend - 8080 port
+- backend - 5000 port
 
 ## Analytics tools
 Simple Vue.js frontend project.

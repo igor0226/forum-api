@@ -10,3 +10,10 @@
 npm ci
 npm run dev
 ```
+
+## Prod build
+
+```shell
+npm ci
+npm run build
+```

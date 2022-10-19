@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "npm test",
-    "dev": "webpack-dev-server --mode development"
+    "dev": "webpack-dev-server --mode development",
+    "build": "NODE_ENV=production webpack",
+    "start": "npx serve -s dist -l 8080"
   },
   "repository": {
     "type": "git",
@@ -25,13 +27,14 @@
   "dependencies": {
     "@babel/core": "7.16.7",
     "@babel/preset-env": "7.16.8",
-    "apexcharts": "^3.35.3",
+    "apexcharts": "3.35.3",
     "babel-eslint": "10.1.0",
     "eslint": "8.7.0",
     "path": "0.12.7",
+    "serve": "14.0.1",
     "source-map": "0.7.3",
     "vue": "2.6.14",
-    "vue-apexcharts": "^1.6.2",
+    "vue-apexcharts": "1.6.2",
     "vue-loader": "15.9.8",
     "vue-material": "1.0.0-beta-15",
     "vue-router": "3.5.3",
@@ -46,6 +49,7 @@
   "devDependencies": {
     "autoprefixer": "10.4.2",
     "babel-loader": "8.2.3",
+    "copy-webpack-plugin": "11.0.0",
     "css-loader": "6.5.1",
     "eslint-config-airbnb": "19.0.4",
     "eslint-loader": "4.0.2",
