@@ -14,4 +14,4 @@ RUN npm ci && npm run build
 
 CMD ["npm", "start"]
 
-EXPOSE 8080:8080
+EXPOSE 80:80

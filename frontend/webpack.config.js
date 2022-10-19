@@ -76,6 +76,7 @@ module.exports = {
         extensions: ['*', '.js', '.vue', '.json'],
     },
     devServer: {
+        port: 80,
         historyApiFallback: true,
         static: {
             directory: path.join(__dirname, 'assets'),

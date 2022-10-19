@@ -7,7 +7,7 @@
     "test": "npm test",
     "dev": "webpack-dev-server --mode development",
     "build": "NODE_ENV=production webpack",
-    "start": "npx serve -s dist -l 8080"
+    "start": "npx serve -s dist -l 80"
   },
   "repository": {
     "type": "git",
