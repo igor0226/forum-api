@@ -22,7 +22,6 @@ from handlers.validators import (
 from models.post import post_model
 from models.thread import thread_model
 from models.user import user_model
-from asyncio import sleep
 
 
 @add_logging
