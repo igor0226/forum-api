@@ -21,6 +21,8 @@
 </template>
 
 <script>
+    import config from '../../configs';
+
     export default {
         name: 'Wiki',
 
@@ -30,7 +32,7 @@
 
         methods: {
             fetchEndpoints() {
-                fetch('http://localhost:5000/analytics/endpoints')
+                fetch(config.ENDPOINTS_URL())
                     .then(response => response.json())
                     .then(endpoints => {
                         this.handlers = endpoints;

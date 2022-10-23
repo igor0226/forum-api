@@ -18,7 +18,7 @@ def worker(thread_num):
 
     while True:
         start = time()
-        requests.get('http://localhost:5000/api/post/2856/details')
+        requests.get('http://192.168.59.100:30685/api/post/2856/details')
         requests_handled += 1
         print(time() - start)
         print('thread #{}; total responses: {} '.format(

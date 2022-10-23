@@ -50,6 +50,8 @@
 </template>
 
 <script>
+    import config from '../../configs';
+
     export default {
         name: 'Reports',
 
@@ -59,7 +61,7 @@
 
         methods: {
             fetchReportTitles() {
-                fetch('http://localhost:5000/analytics/reports')
+                fetch(config.REPORTS_URL())
                     .then(response => response.json())
                     .then(reportTitles => {
                         this.reportTitles = reportTitles;
@@ -67,7 +69,7 @@
             },
 
             fetchReportDetails(reportName) {
-                fetch(`http://localhost:5000/analytics/${reportName}/details`)
+                fetch(config.ONE_REPORT_URL(reportName))
                     .then(response => response.json())
                     .then(details => {
                         this.reportDetailsMap = {

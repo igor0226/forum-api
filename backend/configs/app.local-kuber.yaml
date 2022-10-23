@@ -1,0 +1,6 @@
+db_settings:
+  user: 'igor'
+  password: 'password'
+  database: 'app'
+  host: 'sa-psql-lb'
+  port: '5432'

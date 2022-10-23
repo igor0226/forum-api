@@ -35,7 +35,6 @@ use_perf_logger = args.log_performance == 'True'
 # TODO: docker-compose
 # TODO: answers monitoring
 # TODO: telegram notifications
-# TODO: kubernetes
 app = web.Application()
 app.router.add_route('POST', '/api/user/{nickname}/create', create_user)
 app.router.add_route('GET', '/api/user/{nickname}/profile', get_user)

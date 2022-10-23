@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: sa-backend
+spec:
+    replicas: 1
+    minReadySeconds: 15
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxUnavailable: 1
+            maxSurge: 1
+    selector:
+        matchLabels:
+            app: sa-backend
+    template:
+        metadata:
+            labels:
+                app: sa-backend
+        spec:
+            containers:
+            - image: app-backend
+              name: app-backend
+              imagePullPolicy: Never
+              ports:
+                - containerPort: 5000
+
