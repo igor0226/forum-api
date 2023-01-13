@@ -14,6 +14,6 @@ kubectl apply -f deploy/
 
 echo -n "
     Use commands below to get app endpoints:
-    $ minikube service app-frontend-lb
-    $ minikube service app-backend-lb
+    $ minikube service sa-frontend-lb
+    $ minikube service sa-backend-lb
 " | tail -n 3

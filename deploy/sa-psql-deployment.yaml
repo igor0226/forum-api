@@ -19,8 +19,8 @@ spec:
                 app: sa-psql
         spec:
             containers:
-            - image: app-psql
+            - image: cr.yandex/crpli9f3ae0v1b2slej3/app-psql:latest
               name: app-psql
-              imagePullPolicy: Never
+              imagePullPolicy: Always
               ports:
                 - containerPort: 5432

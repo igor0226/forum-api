@@ -65,7 +65,7 @@ app.router.add_route('OPTIONS', '/{tail:.*}', options_prefetch)
 app.router.add_route('GET', '/analytics/endpoints', get_endpoints)
 app.router.add_route('GET', '/analytics/reports', get_perf_reports_list)
 app.router.add_route('GET', '/analytics/{report_id}/details', get_perf_report)
-app.router.add_route('GET', '/monitoring', ws_handler)
+app.router.add_route('GET', '/analytics/monitoring', ws_handler)
 
 if use_perf_logger:
     performance_logging_worker = Process(

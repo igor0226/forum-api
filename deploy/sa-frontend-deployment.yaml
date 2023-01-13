@@ -19,8 +19,15 @@ spec:
                 app: sa-frontend
         spec:
             containers:
-            - image: app-frontend
+            - image: cr.yandex/crpli9f3ae0v1b2slej3/app-frontend:v2
               name: app-frontend
-              imagePullPolicy: Never
+              imagePullPolicy: Always
               ports:
                 - containerPort: 80
+              livenessProbe:
+                  httpGet:
+                      path: /_healthz
+                      port: 80
+                  initialDelaySeconds: 3
+                  timeoutSeconds: 2
+                  failureThreshold: 2

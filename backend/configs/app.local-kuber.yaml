@@ -2,5 +2,5 @@ db_settings:
   user: 'igor'
   password: 'password'
   database: 'app'
-  host: 'sa-psql-lb'
+  host: 'sa-psql-service'
   port: '5432'

@@ -19,9 +19,9 @@ spec:
                 app: sa-backend
         spec:
             containers:
-            - image: app-backend
+            - image: cr.yandex/crpli9f3ae0v1b2slej3/app-backend:latest
               name: app-backend
-              imagePullPolicy: Never
+              imagePullPolicy: Always
               ports:
                 - containerPort: 5000
 
