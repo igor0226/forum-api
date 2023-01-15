@@ -13,3 +13,9 @@ minikube image load app-psql
 ```shell
 minikube service sa-frontend-lb
 ```
+
+### Public deploying
+
+```shell
+scripts/frontend/prod/build_docker.sh {version}
+```

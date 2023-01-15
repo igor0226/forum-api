@@ -7,6 +7,7 @@ metadata:
     ingress.alb.yc.io/security-groups: enpa4161ll2rhmpq7780
     ingress.alb.yc.io/external-ipv4-address: auto
     ingress.alb.yc.io/group-name: forum-alb-ingress-group
+    ingress.alb.yc.io/upgrade-types: WebSocket
 spec:
     tls:
          - hosts:

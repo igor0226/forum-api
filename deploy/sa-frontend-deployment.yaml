@@ -19,7 +19,7 @@ spec:
                 app: sa-frontend
         spec:
             containers:
-            - image: cr.yandex/crpli9f3ae0v1b2slej3/app-frontend:v2
+            - image: cr.yandex/crpli9f3ae0v1b2slej3/app-frontend:latest
               name: app-frontend
               imagePullPolicy: Always
               ports:

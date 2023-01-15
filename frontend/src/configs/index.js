@@ -1,4 +1,16 @@
 import devConfig from './dev';
 import localKuberConfig from './localKuber';
+import prodConfig from './prod';
 
-export default process.env.DEPLOY === 'local-kuber' ? localKuberConfig : devConfig;
+const getConfig = () => {
+    switch (process.env.DEPLOY) {
+        case 'local-kuber':
+            return localKuberConfig;
+        case 'prod':
+            return prodConfig;
+        default:
+            return devConfig;
+    }
+};
+
+export default getConfig();
