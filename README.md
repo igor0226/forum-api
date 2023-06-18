@@ -37,3 +37,9 @@
 Simple Vue.js frontend project.
 
 Navigate to ```analytics``` dir and learn README
+
+## Local kuberentes cluster
+
+```shell
+./scripts/run_local_kuber.sh
+```

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: sa-frontend
+spec:
+    replicas: 1
+    minReadySeconds: 15
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxUnavailable: 1
+            maxSurge: 1
+    selector:
+        matchLabels:
+            app: sa-frontend
+    template:
+        metadata:
+            labels:
+                app: sa-frontend
+        spec:
+            containers:
+            - image: cr.yandex/crpli9f3ae0v1b2slej3/app-frontend:latest
+              name: app-frontend
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 80
+              livenessProbe:
+                  httpGet:
+                      path: /_healthz
+                      port: 80
+                  initialDelaySeconds: 3
+                  timeoutSeconds: 2
+                  failureThreshold: 2

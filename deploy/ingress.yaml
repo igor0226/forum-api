@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alb-forum-ingress-controller
+  annotations:
+    ingress.alb.yc.io/subnets: e9b525ud8idavpbms3dl
+    ingress.alb.yc.io/security-groups: enpa4161ll2rhmpq7780
+    ingress.alb.yc.io/external-ipv4-address: auto
+    ingress.alb.yc.io/group-name: forum-alb-ingress-group
+    ingress.alb.yc.io/upgrade-types: WebSocket
+spec:
+    tls:
+         - hosts:
+             - forum-api-playground.ru
+             - www.forum-api-playground.ru
+           secretName: yc-certmgr-cert-id-fpq7coed0li2so8r7fj2
+    rules:
+        - host: www.forum-api-playground.ru
+          http:
+            paths:
+              - pathType: Prefix
+                path: "/"
+                backend:
+                    service:
+                        name: sa-frontend-lb
+                        port:
+                            number: 80
+        - host: forum-api-playground.ru
+          http:
+            paths:
+              - pathType: Prefix
+                path: "/"
+                backend:
+                  service:
+                    name: sa-frontend-lb
+                    port:
+                      number: 80

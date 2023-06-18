@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
     entry: './app.js',
@@ -57,6 +58,11 @@ module.exports = {
         ],
     },
     plugins: [
+        new webpack.DefinePlugin({
+            'process.env': {
+                DEPLOY: `"${process.env.DEPLOY}"`,
+            },
+        }),
         new MiniCssExtractPlugin(),
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({
@@ -76,6 +82,7 @@ module.exports = {
         extensions: ['*', '.js', '.vue', '.json'],
     },
     devServer: {
+        port: 8080,
         historyApiFallback: true,
         static: {
             directory: path.join(__dirname, 'assets'),

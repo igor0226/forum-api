@@ -12,11 +12,13 @@
 </template>
 
 <script>
+    import config from '../../configs';
+
     export default {
         name: 'Monitoring',
 
         created() {
-            const socket = new WebSocket('ws://localhost:5000/monitoring');
+            const socket = new WebSocket(config.WS_MONITORING_URL());
 
             socket.addEventListener('message', ({ data }) => {
                 if (data && data.indexOf('[') === 0) {

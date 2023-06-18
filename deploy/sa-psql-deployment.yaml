@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: sa-psql
+spec:
+    replicas: 1
+    minReadySeconds: 15
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxUnavailable: 1
+            maxSurge: 1
+    selector:
+        matchLabels:
+            app: sa-psql
+    template:
+        metadata:
+            labels:
+                app: sa-psql
+        spec:
+            containers:
+            - image: cr.yandex/crpli9f3ae0v1b2slej3/app-psql:latest
+              name: app-psql
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 5432

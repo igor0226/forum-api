@@ -14,6 +14,7 @@ RUN cd backend && \
     mkdir log && mkdir log/rps && touch log/rps/rps.json
 
 ENV PATH="/home/worker/backend/venv/bin:$PATH"
+ENV DEPLOY="local-kuber"
 
 CMD ["python", "backend/app.py", "--log-performance=True"]
 
